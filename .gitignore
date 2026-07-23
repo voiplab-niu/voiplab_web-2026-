@@ -1,0 +1,27 @@
+
+
+# 阻擋日誌與龐大的資料集
+*.log
+*.csv
+
+# 阻擋 Python 虛擬環境與編譯檔
+*env/
+venv/
+*.a
+*.so
+__pycache__/
+
+
+# 忽略影片與大型檔案
+video.mp4
+video/
+fish_farm_web/static/videos/
+*.mp4
+*.avi
+
+# 忽略舊版的備份資料夾 (看你是否有需要備份 old FISH)
+old FISH/
+
+# 忽略 Python 的執行暫存檔
+__pycache__/
+*.pyc

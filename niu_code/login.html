@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登入頁面</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm">
+    <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">登入系統</h1>
+
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label for="username" class="block text-gray-700 font-medium mb-1">帳號</label>
+        <input type="text" id="username" name="username" required
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+      <div>
+        <label for="password" class="block text-gray-700 font-medium mb-1">密碼</label>
+        <!--0725-->
+        <div class="relative">
+          <input type="password" id="password" name="password" required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10" />
+          <span id="togglePassword" class="absolute right-3 top-2.5 cursor-pointer select-none text-gray-600">
+            👁️
+          </span>
+        </div>
+      </div>
+      <button type="submit"
+        class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+        登入
+      </button>
+    </form>
+    <p id="errorMsg" class="text-red-600 text-center mt-4 hidden">❌ 帳號或密碼錯誤，請重新輸入。</p>
+    <!-- 0725 -->
+    <p class="text-center text-sm text-gray-600 mt-4">
+      若無帳號，請聯絡：
+      <a href="mailto:support@example.com" class="text-blue-600 hover:underline font-semibold">voiplab.niu@gmail.com</a>
+    </p>
+     
+    <div class="text-center mt-2">
+      <button id="helpBtn"
+        class="mt-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-sm font-medium transition">
+        📄 使用說明
+      </button>
+    </div>
+  </div>
+
+  <!--0725-->
+  <script>
+    document.getElementById("togglePassword").addEventListener("click", function () {
+      const pwdInput = document.getElementById("password");
+      const isPassword = pwdInput.type === "password";
+      pwdInput.type = isPassword ? "text" : "password";
+      this.textContent = isPassword ? "🙈" : "👁️";
+    });
+
+    document.querySelector('form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const username = document.querySelector('#username').value.trim();
+      const password = document.querySelector('#password').value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          // 儲存登入資料
+          localStorage.setItem('user_id', data.user_id);
+          localStorage.setItem('role', data.role);
+
+          const baseUrl = window.location.origin.replace(':5000', ':8080');
+
+          // 根據角色導向不同頁面
+          if (data.role == 2 || data.role == 1) {
+            window.location.href = `${baseUrl}/niu_code/admin.html`;
+          } else {
+            window.location.href = `${baseUrl}/niu_code/editv2.html`;
+          }
+
+        } else {
+          document.getElementById('errorMsg').textContent = data.error || "登入失敗";
+          document.getElementById('errorMsg').classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('errorMsg').textContent = "❌ 發生錯誤，請稍後再試。";
+        document.getElementById('errorMsg').classList.remove('hidden');
+      }
+    });
+    
+    
+    // 📄 使用說明開啟 PDF
+    document.getElementById('helpBtn').addEventListener('click', function () {
+      window.open('/niu_code/help.pdf', '_blank');
+    });
+  </script>
+</body>
+</html>

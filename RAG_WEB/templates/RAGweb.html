@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+  <title>牛來福-教務處規章問答</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #2575fc;
+      --secondary-color: #6a11cb;
+      --background-gradient: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+      --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      --hover-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      --border-radius: 15px;
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      background: var(--background-gradient);
+      color: #333;
+    }
+
+    .container {
+      width: 90vw;
+      max-width: 800px;
+      padding: 40px;
+      background-color: #ffffff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--hover-box-shadow);
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 3em;
+      margin-bottom: 25px;
+      word-break: break-word;
+    }
+
+    #question {
+      width: 100%;
+      padding: 15px;
+      margin: 20px 0;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      font-size: 1.1em;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    #question:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 12px 30px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      min-width: 100px;
+    }
+
+    button:hover {
+      background-color: #1a56b8;
+      transform: translateY(-2px);
+    }
+
+    #answer {
+      display: none;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e8f0fe;
+      border-radius: 10px;
+      font-size: 1.1em;
+      line-height: 2;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    #loading {
+      font-size: 1em;
+      color: #777;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    #modify-answer-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #modified-answer {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    #modified-answer:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    #feedback-container {
+      display: none;
+      margin-top: 20px;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    #pdf-links {
+      margin-top: 20px;
+      display: none;
+      text-align: left;
+    }
+
+    /* 聊天界面樣式 */
+    .chat-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 64px;
+      height: 64px;
+      background: var(--background-gradient);
+      border-radius: 50%;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      z-index: 999;
+      background-image: url('static/images/NIU_icon.jpg') ;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: transform 0.3s ease;
+    }
+
+    .chat-float:hover {
+      transform: scale(1.05);
+    }
+
+    .chat-popup {
+      position: fixed;
+      bottom: 100px;
+      right: 35px;
+      width: 400px;
+      max-height: 70vh;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 998;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-header {
+      background: var(--background-gradient);
+      color: white;
+      text-align: center;
+      padding: 12px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      max-height: calc(70vh - 120px);
+    }
+
+    .msg {
+      margin-bottom: 10px;
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 80%;
+      word-wrap: break-word;
+      line-height: 1.5;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: inline-block;
+      clear: both;
+    }
+
+    .msg-row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .msg-row.user {
+      justify-content: flex-end;
+    }
+
+    .msg-row.bot {
+      justify-content: flex-start;
+    }
+
+    .msg.user {
+      background: #e0edff;
+      color: #333;
+      border-bottom-right-radius: 5px;
+    }
+
+    .msg.bot {
+      background: #2575fc;
+      color: white;
+      border-bottom-left-radius: 5px;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #eee;
+      background: #fff;
+    }
+
+    .chat-input input {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      font-size: 1em;
+      border-radius: 0;
+    }
+
+    .chat-input input:focus {
+      outline: none;
+    }
+
+    .chat-input button {
+      background: var(--primary-color);
+      border: none;
+      color: white;
+      padding: 0 18px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+      border-radius: 0;
+      min-width: auto;
+      box-shadow: none;
+    }
+
+    .chat-input button:hover {
+      background: #1a56b8;
+    }
+    
+    .chat-hint {
+      position: fixed;
+      bottom: 100px;
+      right: 40px;
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 15px 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      z-index: 997;
+      font-size: 1em;
+      color: #333;
+      display: none; /* 初始隱藏 */
+      flex-direction: column;
+      align-items: flex-start;
+      opacity: 0; /* 初始透明 */
+      transform: translateY(10px);
+    }
+
+    .chat-hint::before {
+      content: "牛來福";
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #2575fc;
+    }
+
+    /* 提示框動畫 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translateY(10px); }
+    }
+
+    /* 響應式設計 */
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 900px;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      h1 {
+        font-size: 2.5em;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        width: 85vw;
+        padding: 30px;
+      }
+      
+      h1 {
+        font-size: 2em;
+      }
+      
+      .chat-popup {
+        width: 350px;
+        right: 20px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        width: 90vw;
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 1.8em;
+        margin-bottom: 15px;
+      }
+      
+      button {
+        padding: 10px 20px;
+        font-size: 1em;
+      }
+      
+      #question {
+        padding: 12px;
+        font-size: 1em;
+      }
+      
+      .chat-popup {
+        width: 90%;
+        right: 5%;
+        bottom: 80px;
+      }
+      
+      .chat-float {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+      }
+      
+      .chat-hint {
+        bottom: 70px;
+        right: 10px;
+        width: 80%;
+      }
+      
+      #feedback-container button {
+        margin: 5px;
+      }
+    }
+    
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 1.5em;
+      }
+      
+      #feedback-container button {
+        padding: 8px 15px;
+        margin: 0 5px;
+      }
+      
+      .chat-body {
+        padding: 10px;
+      }
+      
+      .msg {
+        padding: 8px 12px;
+        font-size: 0.9em;
+      }
+    }
+
+    @media screen and (orientation: landscape) and (max-height: 500px) {
+      body {
+        padding: 10px;
+        height: auto;
+      }
+      
+      .container {
+        margin: 20px 0;
+      }
+      
+      .chat-popup {
+        max-height: 60vh;
+      }
+      
+      .chat-body {
+        max-height: calc(60vh - 120px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 主容器 -->
+  <div class="container">
+    <h1>牛來福-教務處規章問答</h1>
+    <form onsubmit="event.preventDefault(); askQuestion();">
+      <input type="text" id="question" placeholder="請輸入您的問題，問題請清楚說明" required />
+      <button type="submit">送出</button>
+    </form>
+
+    <div id="answer"></div>
+    <p id="loading" style="display: none;">請稍等，查詢中...</p>
+    
+    <!-- PDF 來源連結 -->
+    <div id="pdf-links" style="display: none;">
+      <h3>查詢資料來源：</h3>
+      <ul id="pdf-list" style="list-style-type: none; padding: 0;"></ul>
+    </div>
+    
+    <!-- 回饋按鈕 -->
+    <div id="feedback-container">
+      <button onclick="goodAnswer()" style="background: none; border: none; cursor: pointer;">
+	  <img src="{{ url_for('static', filename='images/like.png') }}" alt="好" style="width: 40px; height: 40px;" />
+	</button>
+	<button onclick="badAnswer()" style="background: none; border: none; cursor: pointer;">
+	  <img src="{{ url_for('static', filename='images/dislike.png') }}" alt="不好" style="width: 40px; height: 40px;" />
+	</button>
+    </div>
+
+    <!-- 修改回答區域 -->
+    <div id="modify-answer-container">
+      <label for="modified-answer">請輸入建議的回答：</label>
+      <textarea id="modified-answer" placeholder="請輸入..." rows="4" required></textarea>
+      <button onclick="submitModifiedAnswer()">提交</button>
+    </div>
+  </div>
+
+  <!-- 聊天浮動按鈕 -->
+  <div class="chat-float" onclick="toggleChat()"></div>
+
+  <!-- 聊天視窗 -->
+  <div class="chat-popup" id="chatBox">
+    <div class="chat-header">牛來福</div>
+    <div class="chat-body" id="chatBody">
+      <div class="msg-row bot">
+        <div class="msg bot">
+          您好，我是牛來福本福能夠幫您解決一些規章的問題，但是不會陪您聊天喔~
+        </div>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="輸入您的訊息" onkeydown="if(event.key==='Enter') sendMessage()">
+      <button onclick="sendMessage()" style="background: none; border: none; cursor: pointer;">
+	  <img src="{{ url_for('static', filename='images/sendMessage.png') }}" alt="送出" style="width: 40px; height: 40px;" /></button>
+    </div>
+  </div>
+  
+  <!-- 提示訊息框 -->
+  <div class="chat-hint" id="chatHint">
+    Hi~需要幫忙嗎？
+  </div>
+
+  <script>
+    // 可配置的伺服器參數
+    const SERVER_IP = "203.145.207.48";
+    const SERVER_PORT = "8081";
+    //const SERVER_URL = `https://${SERVER_IP}:${SERVER_PORT}`;
+    const SERVER_URL = `https://voiplab.niu.edu.tw/rag`;
+  
+    // 儲存當前問題和回答的變數
+    let currentQuestion = '';
+    let currentAnswer = '';
+  
+    // 控制提示訊息框的顯示與隱藏
+    let hintTimeout;
+    const chatHint = document.getElementById("chatHint");
+  
+    // 顯示提示框
+    function showHint() {
+      clearTimeout(hintTimeout); // 清除之前的隱藏計時
+      chatHint.style.display = "flex";
+      chatHint.style.animation = "fadeIn 0.3s ease";
+      chatHint.style.opacity = "1";
+      chatHint.style.transform = "translateY(0)";
+    }
+  
+    // 隱藏提示框
+    function hideHint() {
+      chatHint.style.animation = "fadeOut 0.3s ease";
+      chatHint.style.opacity = "0";
+      chatHint.style.transform = "translateY(10px)";
+      setTimeout(() => {
+        chatHint.style.display = "none";
+      }, 300); // 等待淡出動畫完成
+    }
+  
+    // 延遲隱藏提示框
+    function scheduleHideHint(delay = 3000) {
+      clearTimeout(hintTimeout); // 清除之前的計時
+      hintTimeout = setTimeout(() => {
+        hideHint();
+      }, delay);
+    }
+  
+    // 初始顯示提示框（5 秒後自動隱藏）
+    window.addEventListener("load", () => {
+      showHint();
+      scheduleHideHint(5000); // 5 秒後自動隱藏
+    });
+  
+    // 鼠標懸浮在聊天按鈕上時顯示提示框
+    document.querySelector(".chat-float").addEventListener("mouseenter", () => {
+      showHint();
+    });
+  
+    // 鼠標離開聊天按鈕後，3 秒後隱藏提示框
+    document.querySelector(".chat-float").addEventListener("mouseleave", () => {
+      scheduleHideHint(3000); // 3 秒後隱藏
+    });
+  
+    // 點擊聊天按鈕時隱藏提示框（可選）
+    document.querySelector(".chat-float").addEventListener("click", () => {
+      hideHint();
+    });
+  
+    // 詢問問題的函數
+    async function askQuestion() {
+      const question = document.getElementById("question").value.trim();
+      
+      // 檢查問題長度
+      if (question.length <= 5) {
+          // 在回答視窗顯示錯誤訊息
+          document.getElementById("answer").style.display = 'block';
+          document.getElementById("answer").textContent = '我不太清楚您的問題，請重新輸入並詳細說明（字數需大於5個字）';
+          document.getElementById("loading").style.display = 'none';
+          document.getElementById("feedback-container").style.display = 'none';
+          document.getElementById("question").focus();
+          return; // 停止執行
+      }
+      
+      // UI 重設
+      document.getElementById("loading").style.display = 'block';
+      document.getElementById("feedback-container").style.display = 'none';
+      document.getElementById("modify-answer-container").style.display = 'none';
+      document.getElementById("answer").style.display = 'block';
+      document.getElementById("answer").textContent = '';
+      document.getElementById("pdf-links").style.display = 'none';
+      document.getElementById("pdf-list").innerHTML = "";
+  
+      try {
+        const response = await fetch(`${SERVER_URL}/ask`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: question })
+        });
+  
+        if (!response.ok) throw new Error("無法獲得回答");
+  
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let answerText = "";
+  
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          answerText += decoder.decode(value, { stream: true });
+  
+          // 中途不顯示 SOURCE
+          const displayText = answerText.replace(/\[\[\[SOURCE:(.+?)\]\]\]/, '');
+          document.getElementById("answer").textContent = displayText;
+        }
+  
+        // 儲存當前問題和回答
+        currentQuestion = question;
+        currentAnswer = answerText.trim();
+  
+        // 分析並顯示 PDF 來源
+        if (answerText.includes('[[[SOURCE:')) {
+          const match = answerText.match(/\[\[\[SOURCE:(.+?)\]\]\]/);
+          if (match) {
+            const files = match[1].split(',').map(f => f.trim());
+            const ul = document.getElementById("pdf-list");
+            ul.innerHTML = "";
+            files.forEach(file => {
+              const li = document.createElement("li");
+              const a = document.createElement("a");
+              a.href = `/rag/pdfs/${file}.pdf`;
+              a.textContent = `▶ ${file}`;
+              a.target = "_blank";
+              a.style.color = "#2575fc";
+              a.style.textDecoration = "none";
+              li.appendChild(a);
+              ul.appendChild(li);
+            });
+            document.getElementById("pdf-links").style.display = "block";
+          }
+        }
+  
+        document.getElementById("feedback-container").style.display = 'block';
+      } catch (error) {
+        document.getElementById("answer").textContent = "發生錯誤：" + error.message;
+        document.getElementById("answer").style.display = 'block';
+      } finally {
+        document.getElementById("loading").style.display = 'none';
+      }
+    }
+  
+    function badAnswer() {
+      document.getElementById("feedback-container").style.display = 'none';
+      document.getElementById("modify-answer-container").style.display = 'block';
+      document.getElementById("modified-answer").focus();
+    }
+  
+    function goodAnswer() {
+      resetUI();
+    }
+  
+    async function submitModifiedAnswer() {
+      const modifiedAnswer = document.getElementById("modified-answer").value.trim();
+      if (!modifiedAnswer) {
+        alert("請輸入修改建議！");
+        return;
+      }
+      if (!currentQuestion || !currentAnswer) {
+        alert("請重新詢問！");
+        return;
+      }
+  
+      try {
+        const response = await fetch(`${SERVER_URL}/modify-answer`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question: currentQuestion,
+            original_answer: currentAnswer,
+            modified_answer: modifiedAnswer
+          })
+        });
+  
+        if (!response.ok) throw new Error("提交失敗");
+  
+        alert("修改建議已提交！");
+        resetUI();
+      } catch (error) {
+        alert("提交失敗：" + error.message);
+      }
+    }
+  
+    function resetUI() {
+      document.getElementById("question").value = '';
+      document.getElementById("answer").textContent = '';
+      document.getElementById("answer").style.display = 'none';
+      document.getElementById("feedback-container").style.display = 'none';
+      document.getElementById("modify-answer-container").style.display = 'none';
+      document.getElementById("modified-answer").value = '';
+      document.getElementById("pdf-links").style.display = 'none';
+      document.getElementById("pdf-list").innerHTML = '';
+      currentAnswer = '';
+      document.getElementById("question").focus();
+    }
+  
+    function toggleChat() {
+      const box = document.getElementById("chatBox");
+      box.style.display = box.style.display === "flex" ? "none" : "flex";
+      if (box.style.display === "flex") {
+        document.getElementById("chatInput").focus();
+      }
+    }
+  
+    async function sendMessage() {
+      const input = document.getElementById("chatInput");
+      const text = input.value.trim();
+      if (!text) return;
+      
+      // 檢查問題長度
+      if (text.length <= 5) {
+          appendMessage('bot', '我不太清楚您的問題，請重新輸入並詳細說明（字數需大於5個字）');
+          input.value = '';
+          return;
+      }
+  
+      appendMessage('user', text);
+      input.value = '';
+  
+      const loadingMsg = appendMessage('bot', '請稍等，查詢中...');
+  
+      try {
+        const response = await fetch(`${SERVER_URL}/ask`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: text })
+        });
+  
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let result = "";
+        loadingMsg.textContent = "";
+  
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          result += decoder.decode(value, { stream: true });
+          loadingMsg.textContent = result.replace(/\[\[\[SOURCE:(.+?)\]\]\]/, '');
+        }
+      } catch (err) {
+        loadingMsg.textContent = '發生錯誤，請稍後再試';
+      }
+    }
+  
+    function appendMessage(sender, text) {
+      const row = document.createElement("div");
+      row.className = `msg-row ${sender}`;
+  
+      const msg = document.createElement("div");
+      msg.className = `msg ${sender}`;
+      msg.textContent = text;
+  
+      row.appendChild(msg);
+      document.getElementById("chatBody").appendChild(row);
+      document.getElementById("chatBody").scrollTop = document.getElementById("chatBody").scrollHeight;
+  
+      return msg;
+    }
+  </script>
+
+</body>
+</html>

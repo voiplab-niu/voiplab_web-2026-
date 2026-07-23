@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>NIU_Code名片</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 p-6">
+  <div id="line-hint" style="display: none; background: #fff3cd; padding: 1em; border: 1px solid #ffeeba; margin-bottom: 1em;">
+    ⚠️ 如欲使用訊息名片請點「⋯」選擇【在瀏覽器中開啟】，以便順利加入聯絡人。
+  </div>
+
+  <div class="max-w-xl mx-auto bg-white rounded-2xl shadow-lg p-6 space-y-6">
+    <div id="user-info">
+      <!-- 使用者資訊會透過 JS 動態載入 -->
+    </div>
+
+    <div class="space-y-4" id="user-links">
+      <!-- 使用者連結會透過 JS 動態載入 -->
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('user') || 1;
+    // 顯示提示文字（若在 LINE app 中開啟）
+    if (navigator.userAgent.includes("Line")) {
+      document.getElementById("line-hint").style.display = "block";
+    }
+
+    // 抓取後端 API 的資料
+    fetch(`/api/user/${userId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          document.getElementById('user-info').innerHTML = '<p class="text-red-600">找不到使用者資訊</p>';
+          return;
+        }
+
+        // 插入使用者資訊
+        document.getElementById('user-info').innerHTML = `
+          <h1 class="text-2xl font-bold">${data.name}</h1>
+          <p class="text-lg font-semibold text-red-600">${data.title}</p>
+          <img src="${data.photo}" alt="${data.name} 照片" class="mt-4 w-full max-w-xs mx-auto rounded-xl shadow-md" />
+        `;
+
+        // 插入連結
+        const links = document.getElementById('user-links');
+        links.innerHTML = `<h2 class="text-xl font-semibold">🔗 連結</h2>`;
+
+        if (data.card_link) {
+          links.innerHTML += `
+            <a href="${data.card_link}" class="block bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-xl py-3 px-6 rounded-xl text-center shadow" download>
+              📇 訊息名片
+            </a>`;
+        }
+
+        if (data.line_link) {
+          links.innerHTML += `
+            <a href="${data.line_link}" class="block bg-green-100 hover:bg-green-200 text-green-800 font-bold text-xl py-3 px-6 rounded-xl text-center shadow">
+              💬 LINE 好友
+            </a>`;
+        }
+
+        if (data.fb_link) {
+          links.innerHTML += `
+            <a href="${data.fb_link}" class="block bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold text-xl py-3 px-6 rounded-xl text-center shadow">
+              👥 FB 聯絡我
+            </a>`;
+        }
+      })
+      .catch(error => {
+        console.error("載入資料失敗：", error);
+        document.getElementById('user-info').innerHTML = '<p class="text-red-600">資料載入失敗</p>';
+      });
+  </script>
+</body>
+</html>
+

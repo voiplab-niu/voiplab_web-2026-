@@ -1,0 +1,132 @@
+.chat-float {
+    position: fixed;
+    bottom: 70px;
+    right: 40px;
+    width: 80px;
+    height: 80px;
+    background-color: #0084ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 36px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.chat-float:hover {
+    background-color: #005bb5;
+}
+
+/* 聊天模態框樣式 */
+.chat-modal {
+    position: fixed;
+    display: none; /* 初始隱藏 */
+    width: 300px;
+    height: 400px;
+    background-color: #444;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 999;
+}
+.chat-header {
+    background-color: #333;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-clear {
+    background-color: #ff4d4f !important; /* 紅色背景 */
+    color: #fff; /* 白色文字 */
+    border: none; /* 無邊框 */
+    padding: 5px 10px;
+    border-radius: 5px; /* 圓角 */
+    cursor: pointer;
+    margin-left: auto; /* 向右靠攏 */
+}
+
+.chat-clear:hover {
+    background-color: #b33133; /* 滑鼠移上時的深紅色 */
+}
+
+
+.chat-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.chat-box {
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    flex-grow: 1;
+    background-color: #222;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    all: unset;
+    margin-top: 5px;
+    margin-bottom: 0px !important;
+    padding-left: 10px;  /* 左边的内边距 */
+    padding-right: 10px; /* 右边的内边距 */
+    border-radius: 5px;
+    max-width: 80%;
+    width: auto;  /* 宽度根据内容自适应 */
+    height: auto;  /* 宽度根据内容自适应 */
+    line-height: 1.5;
+    word-wrap: break-word;
+    background-color: rgb(251, 251, 251);
+    text-align: left; /* 确保文字靠左 */
+}
+
+
+
+.user-message {
+    background-color: #0084ff;
+    color: white;
+    align-self: flex-end;
+}
+
+.input-box {
+    display: flex;
+    padding: 10px;
+    background-color: #333;
+    gap: 10px;
+}
+
+.input-box input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    color: white;
+    background-color: #555;
+}
+
+.input-box button {
+    padding: 10px;
+    background-color: #0084ff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.input-box button:hover {
+    background-color: #005bb5;
+}

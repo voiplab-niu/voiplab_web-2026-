@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>註冊帳號</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm">
+    <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">註冊帳號</h1>
+
+    <form id="registerForm" class="space-y-4">
+      <div>
+        <label for="id" class="block text-gray-700 font-medium mb-1">帳號</label>
+        <input type="text" id="id" name="id" required
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+      <div>
+        <label for="name" class="block text-gray-700 font-medium mb-1">顯示名稱</label>
+        <input type="text" id="name" name="name" required
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+      <div>
+        <label for="password" class="block text-gray-700 font-medium mb-1">密碼</label>
+        <div class="relative">
+          <input type="password" id="password" name="password" required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10" />
+          <span id="togglePassword" class="absolute right-3 top-2.5 cursor-pointer select-none text-gray-600">👁️</span>
+        </div>
+      </div>
+      <div>
+        <label for="confirm" class="block text-gray-700 font-medium mb-1">確認密碼</label>
+        <div class="relative">
+          <input type="password" id="confirm" name="confirm" required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 pr-10" />
+          <span id="toggleConfirmPassword" class="absolute right-3 top-2.5 cursor-pointer select-none text-gray-600">👁️</span>
+        </div>
+      </div>
+      <button type="submit"
+        class="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition">
+        註冊
+      </button>
+    </form>
+
+    <p id="errorMsg" class="text-red-600 text-center mt-4 hidden"></p>
+    <p id="successMsg" class="text-green-600 text-center mt-4 hidden">✅ 註冊成功！請前往登入。</p>
+
+    <div class="text-center mt-4">
+      <a href="login.html" class="text-blue-600 hover:underline text-sm">已有帳號？前往登入</a>
+    </div>
+  </div>
+
+  <script>
+    // ✅ 登入檢查：沒登入或不是管理員則導回登入頁
+    const role = parseInt(localStorage.getItem("role"));
+    const userId = localStorage.getItem("user_id");
+
+    if (!userId || isNaN(role) || role < 1) {
+      alert("❌ 無權訪問，請先登入管理員帳號");
+      window.location.href = "login.html";
+    }
+
+    // 👁️ 密碼切換顯示
+    function togglePasswordVisibility(inputId, toggleId) {
+      const input = document.getElementById(inputId);
+      const toggle = document.getElementById(toggleId);
+      toggle.addEventListener('click', () => {
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        toggle.textContent = isPassword ? '🙈' : '👁️';
+      });
+    }
+
+    togglePasswordVisibility('password', 'togglePassword');
+    togglePasswordVisibility('confirm', 'toggleConfirmPassword');
+
+    // 📤 註冊送出
+    document.getElementById('registerForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const id = document.getElementById('id').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+
+      const errorMsg = document.getElementById('errorMsg');
+      const successMsg = document.getElementById('successMsg');
+
+      errorMsg.classList.add('hidden');
+      successMsg.classList.add('hidden');
+
+      if (password !== confirm) {
+        errorMsg.textContent = "❌ 兩次密碼不一致";
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, name, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          successMsg.classList.remove('hidden');
+          document.getElementById('registerForm').reset();
+        } else {
+          errorMsg.textContent = data.error || "❌ 註冊失敗，請稍後再試。";
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error(err);
+        errorMsg.textContent = "⚠️ 無法註冊，請確認網路或伺服器狀況";
+        errorMsg.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

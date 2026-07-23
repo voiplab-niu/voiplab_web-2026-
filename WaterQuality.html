@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>IoTtalk web test</title>
+  <script type="text/javascript" src="WaterQuality/jquery-1.8.3.min.js"></script>
+  <script src="WaterQuality/csmapi.js"></script>
+  <script src="WaterQuality/demo_frame.js"></script>
+  <style>
+    :root{
+      --bg:#0f172a;      /* 背景 */
+      --card:#111827;    /* 卡片底 */
+      --border:#374151;  /* 邊框 */
+      --text:#e2e8f0;    /* 文字 */
+      --muted:#94a3b8;   /* 次要文字 */
+      --accent:#a5b4fc;  /* 強調 */
+    }
+    body { font-family: system-ui, "Microsoft JhengHei", Arial; margin: 24px; background:var(--bg); color:var(--text); }
+
+    .headerbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom: 16px; }
+    .title { color: var(--accent); font-weight: 700; font-size: 18px; }
+    .ts { color: var(--muted); font-size: 12px; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap:16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px 10px;
+    }
+    .card h3{ margin:0 0 8px 0; font-size:16px; color:#c7d2fe; font-weight:700; }
+
+    /* 表格樣式 */
+    .kv { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 10px; border: 1px solid var(--border); }
+    .kv th, .kv td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    .kv th { text-align: left; color: var(--muted); font-weight: 600; width: 60%; }
+    .kv td { font-size: 18px; font-variant-numeric: tabular-nums; }
+
+    .empty { color: var(--muted); font-size: 14px; text-align:center; padding:10px 0; }
+  </style>
+</head>
+
+<body>
+  <div class="headerbar">
+    <div class="title" id="dfName">魚池 x1/x2/x3</div>
+    <div class="ts" id="ts">更新時間：--</div>
+  </div>
+
+  <div id="pondGrid" class="grid"></div>
+
+  <script>
+    $(function () {
+      // API 壞掉期間先註解掉 SDK 初始化，避免 Console 一直報錯
+      // const daiSDK = dai();
+
+      // 解析網址參數：?pond=all 或 ?pond=1（從 1 開始）
+      const url = new URL(window.location.href);
+      const pondParamRaw = url.searchParams.get('pond'); 
+      const pondParam = (pondParamRaw && pondParamRaw.toLowerCase() === 'all') ? null : pondParamRaw;
+
+      const SINGLE_POND = pondParam !== null && pondParam !== '';
+      let POND_INDEX = 0; 
+      if (SINGLE_POND) {
+        const n = parseInt(pondParam, 10);
+        POND_INDEX = Number.isFinite(n) ? Math.max(0, n - 1) : 0;
+        $('#pondGrid').css('grid-template-columns', '1fr');
+      }
+
+      const POND_NAMES = ["魚池 1", "魚池 2", "魚池 3"];
+
+      // 指標與單位（輸入順序：Temperature, pH, DO, Salinity, ORP）
+      const FIELDS = [
+        { label: "溫度", unit: "°C",   digits: 2 },
+        { label: "酸鹼值 (pH)", unit: "",     digits: 2 },
+        { label: "溶氧 (DO)", unit: "mg/L", digits: 2 },
+        { label: "鹽度", unit: "PSU",  digits: 2 },
+        { label: "氧化還原電位 (ORP)", unit: "mV",   digits: 0 },
+      ];
+
+      function fmtNum(v, digits){
+        const n = Number(v);
+        if (!Number.isFinite(n)) return "--";
+        return n.toFixed(digits);
+      }
+
+      function setTime(tsMs){
+        try {
+          const ts = new Date(tsMs);
+          $("#ts").text("更新時間：" + ts.toLocaleString());
+        } catch {
+          $("#ts").text("更新時間：--");
+        }
+      }
+
+      function normVec5(vec){
+        const arr = Array.isArray(vec) ? vec : [vec];
+        const out = [];
+        for (let i=0;i<5;i++){
+          const n = Number(arr[i]);
+          out.push(Number.isFinite(n) ? n : NaN);
+        }
+        return out;
+      }
+
+      function normalizeGroups(raw){
+        let payload = raw;
+        if (Array.isArray(payload) && payload.length > 0 && Array.isArray(payload[0]) && payload.slice(1).every(x => x == null)){
+          payload = payload[0];
+        }
+        if (Array.isArray(payload) && payload.length >= 5 && !Array.isArray(payload[0])){
+          return [ normVec5(payload) ];
+        }
+        if (Array.isArray(payload) && Array.isArray(payload[0])){
+          return payload.filter(Array.isArray).map(normVec5);
+        }
+        return [ normVec5(payload) ];
+      }
+
+      function renderGrid(groups){
+        const grid = $("#pondGrid");
+        const cards = groups.map((vec, idx) => {
+          const rows = FIELDS.map((f, i) => {
+            const txt = fmtNum(vec[i], f.digits) + (f.unit ? (" " + f.unit) : "");
+            return `
+              <tr>
+                <th>${f.label}</th>
+                <td>${txt}</td>
+              </tr>`;
+          }).join("");
+
+          return `
+            <div class="card">
+              <h3>${"水質即時數據"}</h3>
+              <table class="kv">
+                <tbody>${rows}</tbody>
+              </table>
+            </div>`;
+        });
+
+        if (!cards.length) {
+          cards.push(`
+            <div class="card">
+              <h3>${POND_NAMES[0] || "魚池1"}</h3>
+              <div class="empty">尚未收到資料</div>
+            </div>`);
+        }
+
+        grid.html(cards.join(""));
+      }
+
+      // ==========================================
+      // 以下為修改區塊：將動態 API 替換為本地模擬數據
+      // ==========================================
+
+      // 在這裡寫死三個魚池的數值 (順序: 溫度, pH, 溶氧, 鹽度, ORP)
+      const MOCK_DATA = [
+        [21.3, 8.8, 8.5, 0.0, 210], // 魚池 1
+        [21.0, 8.7, 8.2, 0.0, 195], // 魚池 2
+        [20.8, 8.7, 8.0, 0.0, 225]  // 魚池 3
+      ];
+
+      function updateMockUI() {
+        // 1. 讓更新時間動態抓取「現在」的時間
+        setTime(Date.now());
+
+        // 2. 使用寫死的數值進行渲染
+        const groups = normalizeGroups(MOCK_DATA);
+        let pickIdx = 0;
+
+        if (SINGLE_POND) {
+          pickIdx = Math.min(POND_INDEX, Math.max(0, groups.length - 1));
+          renderGrid([ groups[pickIdx] ]);
+          $("#dfName").text(`${POND_NAMES[pickIdx] || "魚池 " + (pickIdx+1)}`);
+        } else {
+          renderGrid(groups);
+          $("#dfName").text("漁場即時水質數據");
+        }
+      }
+
+      // 網頁載入時立刻執行一次
+      updateMockUI();
+      // 每 1000 毫秒 (1秒) 刷新一次 UI，確保時間會跳動
+      setInterval(updateMockUI, 1000);
+
+      // ==========================================
+      // 原本的 API 事件監聽暫時註解，等修好後再打開
+      // ==========================================
+      /*
+      $(window).on('iotTalkUpdate', function (e) {
+        const samples = e.dataArr;
+        if (!samples || !samples.length) return;
+
+        const last = samples[samples.length - 1];
+        const lastTs = Array.isArray(last) ? last[0] : Date.now();
+        const lastVal = Array.isArray(last) ? last[1] : last;
+
+        setTime(lastTs);
+        const groups = normalizeGroups(lastVal);
+        let pickIdx = 0;
+
+        if (SINGLE_POND) {
+          pickIdx = Math.min(POND_INDEX, Math.max(0, groups.length - 1));
+          renderGrid([ groups[pickIdx] ]);
+          $("#dfName").text(`${POND_NAMES[pickIdx] || "魚池 " + (pickIdx+1)}`);
+        } else {
+          renderGrid(groups);
+          $("#dfName").text("漁場即時水質數據");
+        }
+      });
+      */
+    });
+  </script>
+</body>
+</html>

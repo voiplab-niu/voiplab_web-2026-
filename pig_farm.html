@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>智慧豬舍戰情室</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>    
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex">
+
+  <!-- 側邊欄 -->
+  <aside class="w-64 bg-gray-800 p-4 flex flex-col">
+    <h2 class="text-xl font-bold mb-6">戰情室控制面板</h2>
+
+    <div class="mt-auto space-y-2">
+      <button class="w-full bg-gray-600 hover:bg-gray-700 py-2 rounded">設定</button>
+    </div>
+  </aside>
+
+  <!-- 主內容 -->
+  <main class="flex-1 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">即時影像與狀態</h1>
+      <button id="backButton" class="hidden bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded">
+        返回
+      </button>
+    </div>
+
+    <!-- 影像區 -->
+    <div id="imageContainer" class="flex justify-center gap-4 mb-6">
+      <img id="thumb_front" src="" alt="母豬舍C1" class="w-1/3 cursor-pointer rounded-lg shadow-md border-2 border-transparent hover:border-cyan-400 transition"/>
+      <img id="thumb_side" src="" alt="母豬舍C2" class="w-1/3 cursor-pointer rounded-lg shadow-md border-2 border-transparent hover:border-cyan-400 transition"/>
+      <img id="thumb_top" src="" alt="母豬舍C3" class="w-1/3 cursor-pointer rounded-lg shadow-md border-2 border-transparent hover:border-cyan-400 transition"/>
+    </div>
+
+    <!-- 狀態卡片（可縮寬） -->
+    <div id="statusCardWrapper" class="flex justify-center">
+      <div id="statusCard" class="w-full max-w-4xl bg-gradient-to-br from-cyan-800 via-teal-700 to-teal-600 p-4 rounded-2xl shadow-lg text-white relative transition-all">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-bold">🐖 母豬發情狀態</h3>
+          <span class="text-sm bg-white bg-opacity-20 px-2 py-1 rounded">今日統計</span>
+        </div>
+        <p class="text-3xl font-extrabold mb-1">無</p>
+        <p class="text-sm text-teal-100">母豬發情欄位</p>
+        <div class="mt-4">
+          <p class="text-xl font-semibold text-yellow-200">無</p>
+          <p class="text-sm text-yellow-100">母豬陰戶髒污欄位</p>
+        </div>
+        <div class="absolute bottom-2 right-3 opacity-20 text-6xl">🔍</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MQTT 與影像邏輯 -->
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      if (typeof Paho === "undefined") {
+        console.error("Paho MQTT 庫未正確加載");
+        return;
+      }
+
+      const clientId = "webclient_" + Math.random().toString(16).substr(2, 8);
+      const client = new Paho.Client("voiplab.niu.edu.tw", 9001, clientId);
+
+      const thumbFront = document.getElementById("thumb_front");
+      const thumbSide = document.getElementById("thumb_side");
+      const thumbTop = document.getElementById("thumb_top");
+      const backButton = document.getElementById("backButton");
+      const statusCard = document.getElementById("statusCard");
+
+      const imgMap = {
+        "USC/front": "",
+        "USC/side": "",
+        "USC/top": ""
+      };
+
+      client.onConnectionLost = e => {
+        console.error("連線中斷：" + e.errorMessage);
+      };
+
+      client.onMessageArrived = function (message) {
+        const topic = message.destinationName;
+        const base64 = message.payloadString;
+        imgMap[topic] = "data:image/jpeg;base64," + base64;
+
+        if (topic === "USC/front") thumbFront.src = imgMap[topic];
+        if (topic === "USC/side") thumbSide.src = imgMap[topic];
+        if (topic === "USC/top") thumbTop.src = imgMap[topic];
+      };
+
+      client.connect({
+        onSuccess: function () {
+          console.log("已連線");
+          client.subscribe("USC/front");
+          client.subscribe("USC/side");
+          client.subscribe("USC/top");
+        },
+        useSSL: true
+      });
+
+      // 點擊縮圖：只顯示該影像並放大
+      function showSingle(img) {
+        [thumbFront, thumbSide, thumbTop].forEach(el => {
+          if (el === img) {
+            el.classList.remove("w-1/3");
+            el.classList.add("w-2/3");
+            el.classList.remove("hidden");
+          } else {
+            el.classList.add("hidden");
+          }
+        });
+        backButton.classList.remove("hidden");
+        statusCard.classList.remove("max-w-4xl");
+        statusCard.classList.add("max-w-5xl");
+      }
+
+      // 點返回：顯示全部
+      backButton.addEventListener("click", function () {
+        [thumbFront, thumbSide, thumbTop].forEach(el => {
+          el.classList.remove("hidden");
+          el.classList.remove("w-2/3");
+          el.classList.add("w-1/3");
+        });
+        backButton.classList.add("hidden");
+        statusCard.classList.remove("max-w-5xl");
+        statusCard.classList.add("max-w-4xl");
+      });
+
+      thumbFront.addEventListener("click", function () {
+        showSingle(thumbFront);
+      });
+      thumbSide.addEventListener("click", function () {
+        showSingle(thumbSide);
+      });
+      thumbTop.addEventListener("click", function () {
+        showSingle(thumbTop);
+      });
+    });
+  </script>
+</body>
+</html>
+

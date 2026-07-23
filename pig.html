@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PigTalk 智慧養豬戰情室 V6 - 個體精準健康系統</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-card: #1e293b;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b; /* 新增黃色警戒 */
+            --accent-red: #ef4444;    /* 新增紅色警報 */
+            --accent-blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --panel-border: #334155;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: grid;
+            grid-template-columns: 290px 1fr 340px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 左側：AI 決策開關與參數 */
+        .sidebar-left {
+            background-color: var(--bg-sidebar); padding: 20px; border-right: 1px solid var(--panel-border);
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .engine-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--accent-blue); }
+        .engine-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px; }
+
+        .select-box { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .select-box label { font-size: 14px; font-weight: bold; color: var(--text-main); }
+        .select-box select {
+            background-color: #334155; color: white; border: 1px solid var(--panel-border);
+            padding: 10px; border-radius: 6px; outline: none; font-size: 14px; cursor: pointer;
+        }
+
+        .module-tag { font-size: 11px; font-weight: bold; color: var(--accent-blue); letter-spacing: 0.5px; margin-top: 5px; text-transform: uppercase;}
+
+        .factor-item {
+            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 10px; border: 1px solid transparent; transition: all 0.3s;
+        }
+        
+        /* 中間：影像監控與決策區 */
+        .main-view { padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        
+        .video-box {
+            width: 100%; background: #000; border-radius: 12px;
+            position: relative; border: 0px solid var(--panel-border);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .video-box video { width: 100%; aspect-ratio: 16/9; object-fit: cover; opacity: 0.9; }
+
+        /* 核心決策 UI */
+        .decision-engine-ui {
+            background: var(--bg-card); padding: 20px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: space-around;
+            border: 1px solid var(--panel-border); transition: all 0.3s;
+        }
+
+        .score-circle {
+            width: 120px; height: 120px; border-radius: 50%;
+            border: 8px solid var(--accent-green);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(16, 185, 129, 0.1); transition: all 0.3s;
+        }
+        .score-num { font-size: 32px; font-weight: bold; transition: all 0.3s;}
+        .score-label { font-size: 10px; color: var(--text-muted); }
+
+        .status-box { flex: 1; margin-left: 30px; }
+        .status-tag { 
+            background: var(--accent-green); color: white; padding: 4px 12px; 
+            border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; transition: all 0.3s;
+        }
+        .status-main { font-size: 20px; font-weight: bold; margin: 10px 0; transition: all 0.3s;}
+        .status-action { font-size: 13px; color: var(--text-muted); transition: all 0.3s;}
+
+        /* 右側：ESG 與 歷史行為指標 */
+        .sidebar-right { background-color: var(--bg-sidebar); padding: 20px; border-left: 1px solid var(--panel-border); overflow-y: auto; }
+        .panel-header { font-size: 15px; font-weight: bold; margin: 20px 0 12px 0; color: var(--accent-blue); border-bottom: 1px solid var(--panel-border); padding-bottom: 6px; }
+        .panel-header:first-child { margin-top: 0; }
+        
+        .kpi-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        .kpi-val { font-size: 24px; font-weight: bold; color: var(--accent-green); }
+
+        .comp-card { background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .comp-card-title { font-size: 13px; font-weight: bold; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .comp-row { display: flex; justify-content: space-between; font-size: 12px; margin-top: 4px; }
+        .comp-label { color: var(--text-muted); }
+        .val-dynamic { font-weight: bold; transition: all 0.3s; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-left">
+        <div class="engine-title">AI 決策引擎</div>
+        <div class="engine-desc">整合生理與行為多模態數據，動態評估個體發情精準度。</div>
+
+        <div class="select-box">
+            <label><i class="fa-solid fa-paw"></i> 選擇管理豬隻</label>
+            <select id="pigSelect">
+                <option value="C15">豬隻編號 - C15</option>
+                <option value="C16">豬隻編號 - C16</option>
+ <option value="C17">豬隻編號 - C17</option>
+ 
+ <option value="C18">豬隻編號 - C18</option>
+ 
+ <option value="C19">豬隻編號 - C19</option>
+            </select>
+        </div>
+
+        <div class="module-tag">生理演算模組 (Physiological Track)</div>
+        <div class="factor-item" id="icon-vulva" style="border-color: var(--accent-green); background: rgba(16, 185, 129, 0.1);">
+            <div class="factor-icon" style="color: var(--accent-green);"><i class="fa-solid fa-eye"></i></div>
+            <div>
+                <div style="font-size:13px; font-weight: bold;">陰戶型態與色彩分析</div>
+                <div id="status-vulva" style="font-size:11px; color:var(--accent-green); margin-top: 2px;">狀態：正常無充血</div>
+            </div>
+        </div>
+
+        <div class="module-tag">行為演算模組 (Behavioral Track)</div>
+        <div class="factor-item" id="icon-move" style="border-color: var(--accent-green); background: rgba(16, 185, 129, 0.1);">
+            <div class="factor-icon" style="color: var(--accent-green);"><i class="fa-solid fa-chart-line"></i></div>
+            <div>
+                <div style="font-size:13px; font-weight: bold;">躁動指標監測</div>
+                <div id="status-move" style="font-size:11px; color:var(--accent-green); margin-top: 2px;">狀態：活動量低</div>
+            </div>
+        </div>
+
+        <div class="factor-item" id="icon-stand" style="border-color: var(--accent-green); background: rgba(16, 185, 129, 0.1);">
+            <div class="factor-icon" style="color: var(--accent-green);"><i class="fa-solid fa-hand-pointer"></i></div>
+            <div>
+                <div style="font-size:13px; font-weight: bold;">母豬發情站立反應</div>
+                <div id="status-stand" style="font-size:11px; color:var(--accent-green); margin-top: 2px;">狀態：無站立反射</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-view">
+        <div class="video-box">
+            <video id="monitorVideo" src="pdf/a.mp4" type="video/mp4" autoplay muted></video>
+
+            <div style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.6); padding:5px 10px; border-radius:4px; font-size:12px;">
+                🔴 LIVE - 大峯牧場待配舍 C1 區
+            </div>
+        </div>
+
+        <div class="decision-engine-ui">
+            <div class="score-circle" id="ui-circle">
+                <div class="score-num" id="ui-score">0.0%</div>
+                <div class="score-label">ECI信心模型</div>
+            </div>
+            <div class="status-box">
+                <div class="status-tag" id="ui-tag">日常狀態監測</div>
+                <div class="status-main" id="ui-main">結果：持續收集數據 🟢</div>
+                <div class="status-action" id="ui-action">
+                    目前無明顯異常，系統穩定運作中。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-right">
+        <div class="panel-header">🌿 ESG 永續成果量化</div>
+        <div class="kpi-card" style="background: linear-gradient(135deg, #065f46, #064e3b); margin-bottom: 0;">
+            <div style="font-size: 12px;">累計減少碳排放量</div>
+            <div class="kpi-val" style="color:white; font-size: 32px;">5.16 <span style="font-size:14px;">tCO2e</span></div>
+        </div>
+
+        <div class="panel-header">📊 發情徵兆與配種決策依據</div>
+        
+        <div class="comp-card">
+            <div class="comp-card-title"><i class="fa-solid fa-chart-line" style="color: var(--accent-blue);"></i> 行為趨勢分析</div>
+            <div class="comp-row">
+                <span class="comp-label">基準狀態:</span>
+                <span>活動量低、安靜躺臥</span>
+            </div>
+            <div class="comp-row">
+                <span class="comp-label">AI 實測:</span>
+                <span class="val-dynamic" id="val-move" style="color: var(--accent-green);">活動平穩</span>
+            </div>
+        </div>
+
+        <div class="comp-card">
+            <div class="comp-card-title"><i class="fa-solid fa-eye" style="color: var(--accent-blue);"></i> 陰戶特徵辨識</div>
+            <div class="comp-row">
+                <span class="comp-label">基準狀態:</span>
+                <span>外觀正常、無充血現象</span>
+            </div>
+            <div class="comp-row">
+                <span class="comp-label">AI 實測:</span>
+                <span class="val-dynamic" id="val-vulva" style="color: var(--accent-green);">無充血現象</span>
+            </div>
+        </div>
+
+        <div class="comp-card">
+            <div class="comp-card-title"><i class="fa-solid fa-hand-pointer" style="color: var(--accent-blue);"></i> 站立反應測試</div>
+            <div class="comp-row">
+                <span class="comp-label">基準狀態:</span>
+                <span>無特殊站立反射</span>
+            </div>
+            <div class="comp-row">
+                <span class="comp-label">AI 實測:</span>
+                <span class="val-dynamic" id="val-stand" style="color: var(--accent-green);">未偵測到站立</span>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<script>
+        // 監聽下拉式選單的切換事件
+        document.getElementById('pigSelect').addEventListener('change', function(e) {
+            const pigId = e.target.value;
+
+            // 取得需要變更的 HTML 元素
+            const iconMove = document.getElementById('icon-move');
+            const iconMoveIcon = iconMove.querySelector('.factor-icon');
+            const statusMove = document.getElementById('status-move');
+            const uiScore = document.getElementById('ui-score');
+            const uiCircle = document.getElementById('ui-circle');
+            const valMove = document.getElementById('val-move');
+            const uiTag = document.getElementById('ui-tag');
+            const uiMain = document.getElementById('ui-main');
+            const uiAction = document.getElementById('ui-action');
+
+            if (pigId === 'C19') {
+                // === 切換到 C19 時的狀態 ===
+                
+                // 1. 左側：躁動指標變成紅色
+                iconMove.style.borderColor = 'var(--accent-red)';
+                iconMove.style.background = 'rgba(239, 68, 68, 0.1)';
+                iconMoveIcon.style.color = 'var(--accent-red)';
+                statusMove.innerText = '狀態：頻繁變換姿態';
+                statusMove.style.color = 'var(--accent-red)';
+
+                // 2. 中間：ECI 分數變 25%，狀態改為黃色警戒 (因為才 25%，用黃色比較合理，你可以視需求改紅色)
+                uiScore.innerText = '25.0%';
+
+
+
+
+            } else {
+                // === 切換到其他豬隻 (C15~C18) 時，恢復預設綠色狀態 ===
+                
+                iconMove.style.borderColor = 'var(--accent-green)';
+                iconMove.style.background = 'rgba(16, 185, 129, 0.1)';
+                iconMoveIcon.style.color = 'var(--accent-green)';
+                statusMove.innerText = '狀態：活動量低';
+                statusMove.style.color = 'var(--accent-green)';
+
+                uiScore.innerText = '0.0%';
+                uiCircle.style.borderColor = 'var(--accent-green)';
+                uiCircle.style.background = 'rgba(16, 185, 129, 0.1)';
+
+                uiTag.innerText = '日常狀態監測';
+                uiTag.style.background = 'var(--accent-green)';
+                uiMain.innerText = '結果：持續收集數據 🟢';
+                uiAction.innerText = '目前無明顯異常，系統穩定運作中。';
+
+                valMove.innerText = '活動平穩';
+                valMove.style.color = 'var(--accent-green)';
+            }
+        });
+    </script>
+</body>
+</html>
+</html>

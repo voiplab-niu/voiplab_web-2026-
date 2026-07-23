@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>編輯個人資訊</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Cropper.js CSS & JS -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <style>
+    /* 修改註解：限制裁切 Modal 裡圖片最大尺寸，避免超出視窗 */
+    #cropperModal {
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.5);
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #cropperModal.active {
+      display: flex;
+    }
+    #cropperModal .modal-content {
+      background: white;
+      padding: 1rem;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 8px;
+    }
+    #cropperModal img {
+      max-width: 100%;
+      max-height: 70vh; /* 限制高度，避免超出視窗 */
+      display: block;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800 p-6">
+  <div class="max-w-xl mx-auto bg-white rounded-2xl shadow-lg p-6 space-y-6">
+    <!-- 0721 -->
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">📝 編輯個人資訊</h1>
+      <button onclick="openPasswordModal()" class="text-sm text-blue-600 hover:underline">🔒 修改密碼</button>
+    </div>
+    <form id="profile-form" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+        <input type="text" id="name" name="name" placeholder="請輸入姓名"
+          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">職稱</label>
+        <input type="text" id="title" name="title" placeholder="請輸入職稱"
+          class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">上傳照片</label>
+        <input type="file" id="photo" name="photo" accept="image/png, image/jpeg, image/jpg"
+          class="w-full px-4 py-2 border rounded-lg" onchange="openCropperModal(event)" />
+        <img id="cropped-preview" src="" alt="預覽圖片" class="rounded-lg max-h-48 mx-auto hidden" />
+
+        <!-- 修改註解：新增 hidden input 儲存裁切後 base64 圖片 -->
+        <input type="hidden" id="croppedPhoto" name="croppedPhoto" />
+      </div>
+
+      <div class="space-y-4">
+        <h2 class="text-lg font-semibold text-blue-600">🔗 常用連結</h2>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">LINE 好友連結</label>
+          <input type="url" name="lineLink" placeholder="輸入 LINE 加好友連結"
+            class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none" />
+          <button type="button" onclick="window.location.href='line://';"
+            class="text-white bg-green-500 text-sm block rounded-lg mt-2 px-4 py-2 hover:bg-green-600">開啟 LINE</button>
+          <ul class="mt-2 text-sm text-gray-600 list-disc list-inside">
+            <li>點擊按鈕開啟 LINE</li>
+            <li>點選右上方加入好友</li>
+            <li>點選行動條碼</li>
+            <li>點選顯示行動條碼</li>
+            <li>點選複製連結並貼到上方欄位即可</li>
+          </ul>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">電話</label>
+          <input type="tel" id="phone" name="phone" placeholder="輸入聯繫電話"
+            class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" id="email" name="email" placeholder="輸入電子郵件地址"
+            class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none" />
+        </div>
+
+        <div>
+          <button type="button" onclick="generateContactVCF()"
+            class="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition">📱 產生聯絡人VCF (電話+信箱)</button>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">上傳訊息名片</label>
+          <div class="flex flex-col md:flex-row md:space-x-4 md:space-y-0 space-y-2">
+            <input type="file" name="cardFile" accept=".vcf" class="flex-1 px-4 py-2 border rounded-lg" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Facebook 好友連結</label>
+          <input type="url" name="fbLink" placeholder="輸入 Facebook 個人頁面連結"
+            class="w-full px-4 py-2 border rounded-lg focus:ring focus:outline-none" />
+          <button type="button" id="openFbBtn"
+            class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">開啟 Facebook</button>
+          <ul class="mt-2 text-sm text-gray-600 list-disc list-inside">
+            <li>點擊按鈕開啟 Facebook</li>
+            <li>登入後點編輯個人檔案旁邊的...</li>
+            <li>滑到最下面找到複製個人檔案連結</li>
+            <li>並貼到上方欄位即可</li>
+          </ul>
+        </div>
+      </div>
+
+      <button type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl">儲存修改</button>
+    </form>
+  </div>
+
+  <!-- Cropper Modal -->
+  <div id="cropperModal">
+    <div class="modal-content">
+      <img id="cropperImage" alt="裁切圖片" />
+      <div class="flex space-x-4">
+        <button id="cancelCropBtn" class="px-4 py-2 bg-gray-400 rounded hover:bg-gray-500">取消</button>
+        <button id="applyCropBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">裁切並套用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 0721 密碼修改 -->
+  <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg max-w-sm w-full p-6 shadow-lg">
+      <h2 class="text-xl font-bold mb-4">🔐 修改密碼</h2>
+      <div class="space-y-4">
+        <input type="password" id="oldPassword" placeholder="輸入舊密碼" class="w-full px-4 py-2 border rounded-lg">
+        <input type="password" id="newPassword" placeholder="輸入新密碼" class="w-full px-4 py-2 border rounded-lg">
+        <input type="password" id="confirmPassword" placeholder="再次輸入新密碼" class="w-full px-4 py-2 border rounded-lg">
+      </div>
+      <div class="mt-4 flex justify-end space-x-2">
+        <button onclick="closePasswordModal()" class="px-4 py-2 text-gray-600 hover:underline">取消</button>
+        <button onclick="submitPasswordChange()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">送出</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tutorialModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg max-w-md p-6 shadow-lg">
+      <h2 class="text-xl font-bold mb-4">📘 (電腦版)如何取得 Facebook 個人頁面連結</h2>
+      <ol class="list-decimal list-inside text-gray-700 mb-4 space-y-2">
+        <li>點擊「我知道了」後，會開啟 Facebook 網站。</li>
+        <li>登入你的帳號。</li>
+        <li>點擊頁面右上方的你的名字，進入個人主頁。</li>
+        <li>複製瀏覽器網址列中的完整網址。</li>
+        <li>回到這頁，貼到「Facebook 好友連結」欄位中。</li>
+      </ol>
+      <button id="closeTutorialBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">我知道了</button>
+    </div>
+  </div>
+
+  <script>
+    let cropper = null;
+
+    // 點擊上傳照片時開啟裁切Modal，初始化Cropper
+    function openCropperModal(event) {
+      const file = event.target.files[0];
+      if (!file || !file.type.startsWith('image/')) {
+        alert("❌ 請選擇有效的圖片格式（png、jpg、jpeg）");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const cropperImage = document.getElementById('cropperImage');
+        cropperImage.src = reader.result;
+        showCropperModal();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showCropperModal() {
+      const modal = document.getElementById('cropperModal');
+      modal.classList.add('active');
+
+      // 等圖片載入完，初始化Cropper
+      const image = document.getElementById('cropperImage');
+      image.onload = () => {
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+          movable: true,
+          zoomable: true,
+          rotatable: false,
+          scalable: false,
+          dragMode: 'move',
+          autoCropArea: 1,
+          responsive: true,
+          background: false,
+        });
+      };
+    }
+
+    // 修改註解：關閉裁切 Modal 並銷毀 Cropper 實例
+    function closeCropperModal() {
+      const modal = document.getElementById('cropperModal');
+      modal.classList.remove('active');
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+
+      // 清除裁切圖片，避免殘留
+      document.getElementById('cropperImage').src = '';
+    }
+
+    // 修改註解：裁切圖片並將 base64 圖片字串存入 hidden input，更新預覽
+    function applyCrop() {
+      if (!cropper) return alert("裁切器尚未初始化");
+
+      // 產生裁切畫布（固定為 400x400px）
+      const canvas = cropper.getCroppedCanvas({
+        width: 400,
+        height: 400
+      });
+
+      // 將畫布轉成圖片 Blob，避免 base64 太大造成 413 錯誤
+      canvas.toBlob(blob => {
+        if (!blob) {
+          alert("❌ 裁切失敗，請重試");
+          return;
+        }
+
+        // 更新預覽圖片（畫面顯示）
+        const preview = document.getElementById('cropped-preview');
+        preview.src = URL.createObjectURL(blob);
+        preview.classList.remove('hidden');
+
+        // ✅ 使用 DataTransfer 建立新的檔案，覆蓋 <input type="file"> 的內容
+        const fileInput = document.getElementById('photo');
+        const dataTransfer = new DataTransfer();
+        const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+        dataTransfer.items.add(file);
+        fileInput.files = dataTransfer.files;
+
+        // 關閉裁切 Modal
+        closeCropperModal();
+      }, 'image/jpeg', 0.9); // 加入壓縮率（90% 品質）
+    }
+
+
+    // 修改註解：裁切 Modal 取消按鈕事件
+    document.getElementById('cancelCropBtn').addEventListener('click', () => {
+      closeCropperModal();
+
+      // 取消裁切時清除 file input 值，避免殘留檔案
+      document.getElementById('photo').value = '';
+    });
+
+    // 修改註解：裁切 Modal 確認套用按鈕事件
+    document.getElementById('applyCropBtn').addEventListener('click', () => {
+      applyCrop();
+    });
+
+    // 產生 VCF 檔案功能 (原本的程式碼)
+    function generateContactVCF() {
+      const name = document.getElementById('name').value.trim();
+      const title = document.getElementById('title').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const lineLink = document.querySelector('[name="lineLink"]').value.trim();
+      const fbLink = document.querySelector('[name="fbLink"]').value.trim();
+
+      if (!phone && !email) return alert('請至少輸入電話或電子信箱！');
+
+      const displayName = name || '聯絡人';
+      const lastName = name ? name[0] : '';
+      const firstName = name && name.length > 1 ? name.slice(1) : '';
+
+      const vCardLines = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `N;CHARSET=UTF-8:${lastName};${firstName};;;`,
+        `FN;CHARSET=UTF-8:${displayName}`
+      ];
+      if (title) vCardLines.push(`TITLE;CHARSET=UTF-8:${title}`);
+      if (phone) vCardLines.push(`TEL;TYPE=CELL:${phone}`);
+      if (email) vCardLines.push(`EMAIL:${email}`);
+      if (lineLink) vCardLines.push(`URL;TYPE=LINE:${lineLink}`);
+      if (fbLink) vCardLines.push(`URL;TYPE=FACEBOOK:${fbLink}`);
+      vCardLines.push(`REV:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`);
+      vCardLines.push('END:VCARD');
+
+      const blob = new Blob([vCardLines.join('\n')], { type: 'text/vcard;charset=utf-8' });
+      const file = new File([blob], `${displayName}_聯絡資訊.vcf`, { type: 'text/vcard' });
+
+      const fileInput = document.querySelector('input[name="cardFile"]');
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInput.files = dataTransfer.files;
+
+      alert(`✅ VCF檔案已產生：${file.name}`);
+    }
+
+    // 表單送出事件 - 修改過，送出時同時帶 hidden croppedPhoto
+    document.getElementById("profile-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const userId = localStorage.getItem('user_id');
+
+      // 使用 FormData 包含所有表單欄位（含檔案、hidden input）
+      const formData = new FormData(this);
+
+
+      try {
+        const res = await fetch(`/api/user/${userId}`, { method: "POST", body: formData });
+        const result = await res.json();
+        if (res.ok) alert("✅ 資料已成功儲存！");
+        else alert("⚠️ 儲存失敗：" + (result.error || "未知錯誤"));
+      } catch (error) {
+        alert("⚠️ 系統錯誤：" + error.message);
+      }
+    });
+
+  // 載入頁面時取得使用者資料並填入表單
+  window.addEventListener("DOMContentLoaded", async () => {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) return location.href = "/niu_code/login.html";
+
+    try {
+      const res = await fetch(`/api/user2/${userId}`);
+      const data = await res.json();
+
+      // 🧍‍♂️ 基本資訊填入
+      document.getElementById("name").value = data.name || "";
+      document.getElementById("title").value = data.title || "";
+      document.getElementById("phone").value = data.phone || "";
+      document.getElementById("email").value = data.email || "";
+
+      // 🌐 自動填入 LINE / FB 連結
+      document.querySelector('[name="lineLink"]').value = data.line_link || "";
+      document.querySelector('[name="fbLink"]').value = data.fb_link || "";
+
+      // 🖼️ 顯示使用者圖片（ID 修正為 cropped-preview）
+      if (data.photo) {
+        const preview = document.getElementById("cropped-preview"); // ✅ 修正 ID
+        if (preview) {
+          preview.src = data.photo;
+          preview.classList.remove("hidden");
+        }
+      }
+
+      // 📎 加入 VCF 狀態顯示
+      if (data.card_link) {
+        const fileInput = document.querySelector('input[name="cardFile"]');
+        const fileInputContainer = fileInput.parentElement;
+        let statusDiv = fileInputContainer.querySelector('.vcf-status');
+
+        if (!statusDiv) {
+          statusDiv = document.createElement('div');
+          statusDiv.className = 'vcf-status flex-1 p-2 bg-blue-100 border border-blue-300 rounded text-blue-700 text-sm';
+          fileInputContainer.appendChild(statusDiv);
+
+          // 💡 調整父容器為 flex layout
+          fileInputContainer.classList.add('flex', 'flex-col', 'md:flex-row', 'md:space-x-4', 'md:space-y-0', 'space-y-2');
+        }
+
+        const fileName = data.card_link.split('/').pop();
+        statusDiv.innerHTML = `📁 現有VCF檔案: ${fileName}`;
+      }
+
+    } catch (err) {
+      alert("⚠️ 資料讀取失敗，請重新登入");
+      localStorage.removeItem("user_id");
+      location.href = "/niu_code/login.html";
+    }
+  });
+
+
+    // Facebook 教學提示與開啟
+    document.getElementById('openFbBtn').addEventListener('click', () => {
+      const fbInput = document.querySelector('[name="fbLink"]');
+      if (!fbInput.value.trim()) {
+        alert("請先輸入 Facebook 個人頁面連結");
+        return;
+      }
+      const tutorialModal = document.getElementById('tutorialModal');
+      tutorialModal.classList.remove('hidden');
+    });
+    document.getElementById('closeTutorialBtn').addEventListener('click', () => {
+      const tutorialModal = document.getElementById('tutorialModal');
+      tutorialModal.classList.add('hidden');
+
+      const fbInput = document.querySelector('[name="fbLink"]');
+      if (fbInput.value.trim()) {
+        window.open(fbInput.value.trim(), '_blank');
+      }
+    });
+
+    // 密碼修改 Modal 顯示
+    function openPasswordModal() {
+      document.getElementById('passwordModal').classList.remove('hidden');
+    }
+    function closePasswordModal() {
+      document.getElementById('passwordModal').classList.add('hidden');
+    }
+    async function submitPasswordChange() {
+      const oldP = document.getElementById('oldPassword').value;
+      const newP = document.getElementById('newPassword').value;
+      const confirmP = document.getElementById('confirmPassword').value;
+      if (!oldP || !newP || !confirmP) return alert("請完整填寫密碼欄位");
+      if (newP !== confirmP) return alert("新密碼與確認密碼不一致");
+
+      const userId = localStorage.getItem('user_id');
+      try {
+        const res = await fetch('/api/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, oldPassword: oldP, newPassword: newP })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("✅ 密碼修改成功");
+          closePasswordModal();
+          // 清空欄位
+          document.getElementById('oldPassword').value = '';
+          document.getElementById('newPassword').value = '';
+          document.getElementById('confirmPassword').value = '';
+        } else {
+          alert("⚠️ 密碼修改失敗：" + (data.error || "未知錯誤"));
+        }
+      } catch (error) {
+        alert("⚠️ 系統錯誤：" + error.message);
+      }
+    }
+  </script>
+</body>
+
+</html>

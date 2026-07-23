@@ -1,0 +1,580 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by TEMPLATED
+http://templated.co
+Released for free under the Creative Commons Attribution License
+
+Name       : Low-Down 
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20131117
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>::: NIU - CSIE VoIP Lab ~ Research :::</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900|Varela+Round" rel="stylesheet" />
+<link href="default.css" rel="stylesheet" type="text/css" media="all" />
+<link href="fonts.css" rel="stylesheet" type="text/css" media="all" />
+<link href="mycss.css" rel="stylesheet" type="text/css" media="all" />
+<link href="footer.css" rel="stylesheet" type="text/css" media="all" />
+<link href ="flexslider.css" rel ="stylesheet" type ="text/css">
+<link rel ="icon"type="image/x-icon"href="images/voip.ico"/>
+<script src ="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="https://kit.fontawesome.com/698a46b724.js" crossorigin="anonymous"></script>
+<script src ="js/jquery.flexslider.js"></script>
+
+<!--[if IE 6]>
+<link href="default_ie6.css" rel="stylesheet" type="text/css" />
+<![endif]-->  
+</head>
+<body onLoad="startclock()">
+<div id="wrapper">
+	<div id="header-wrapper">
+		<div id="header" class="container">
+			<div id="logo">
+				<h1><img src ="images/voipo.png" width="50" height="55" >VoIPLab</h1>
+				<p>建立於2007/08</a></p>
+			</div>
+			<div id="social">
+				<div id="whatday" class="time">none</div>
+				<form name="clock">
+					<input name="thetime" class="time" size="10">
+				</form>
+				<!-- <ul class="contact">
+					<li><a href="#" class="icon icon-twitter"><span>Twitter</span></a></li>
+					<li><a href="#" class="icon icon-facebook"><span></span></a></li>
+					<li><a href="#" class="icon icon-dribbble"><span>Pinterest</span></a></li>
+					<li><a href="#" class="icon icon-tumblr"><span>Google+</span></a></li>
+					<li><a href="#" class="icon icon-rss"><span>Pinterest</span></a></li>
+				</ul> -->
+			</div>
+		</div>
+		<div id="menu" class="container">
+			<ul>
+				<li><a style="font-size: 20px;" href="index.html" accesskey="1" title="">首頁</a></li>
+				<li><a style="font-size: 20px;" href="Introduction.html" accesskey="1" title="">簡介</a></li>
+				<li><a style="font-size: 20px;" href="Advisor.html" accesskey="2" title="">指導教授</a></li>
+				<li><a style="font-size: 20px;" href="Member.html" accesskey="3" title="">成員</a></li>
+				<li><a style="font-size: 20px;" href="Publications.html" accesskey="4" title="">發表成果</a></li>
+				<li class="current_page_item"><a style="font-size: 20px;" href="Research.html" accesskey="5" title="">計畫與成果展示</a></li>
+				<li><a style="font-size: 20px;" href="video.html" accesskey="5" title="">影音專區</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="page" class="container" >
+	<div style="width: 80%;margin:0 auto;font-size: 30px;color:rgb(0, 89, 255);font-weight:bold;padding: 0.1em 0em;">近期動態</div>
+	<div style="width: 90%;margin:0 auto;padding: 1em 1em;">
+		<table width="100%" style="font-family: Microsoft JhengHei;font-size: 16px;border:8px #FFD382 groove;" border="1" cellpadding="10">
+			<tr id="tr1" style="font-weight:bold;font-size: 18px;">
+				<td width="25%" valign="middle" align="left">
+					<ol id="ol1" style="margin-block-end:0.3em;font-size: 20px;">
+						<li>植物管理套件</li>
+					</ol>
+					<ul style="line-height: 150%; text-align: justify; text-justify:inter-ideograph;margin-block-end:0em;margin-left:0.5em;">
+						<li>Arduino</li>
+						<li>LineNotify</li>
+						<li>Node-red</li>
+					</ul>
+				</td>
+				<td width="60%" valign="middle" align="center">
+					<table>
+					<tr>
+						<td style="padding: 0em 1em;"><img id="im1" src="images/plant.jpg" width="300" style="margin-bottom: 0em;"></td>
+						<td style="padding: 0em 1em;"><img id="im2" src="images/nodered.jpg" height="230" style="margin-bottom: 0em;"></td>
+					</tr>
+					<tr>
+						<td align="center"><div>植物管理套件</div></td>
+						<td align="center"><div>Node-red數據端</div></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	<div style="width: 80%;margin:0 auto;font-size: 30px;color:rgb(0, 89, 255);font-weight:bold;padding: 0.1em 0em;">研究展示</div>
+	<div style="width: 90%;margin:0 auto;padding: 1em 1em;">
+		<table width="100%" style="font-family: Microsoft JhengHei;font-size: 16px;border:8px #FFD382 groove;" border="1" cellpadding="10">
+			<tr id="tr1" style="font-weight:bold;font-size: 18px;">
+				<td width="25%" valign="middle" align="left">
+					<ol id="ol1" style="margin-block-end:0.3em;font-size: 20px;">
+						<li>智能化豬場管理系統</li>
+					</ol>
+					<ul style="line-height: 150%; text-align: justify; text-justify:inter-ideograph;margin-block-end:0em;margin-left:0.5em;">
+						<li>LINE Bot</li>
+						<li>自製IP Cam</li>
+						<li>影像辨識豬隻</li>
+						<li>豬隻健康指標</li>
+						<li>監控與管理系統</li>
+						<li>物聯網系統IoTtalk</li>
+						<li>人工智慧及資通訊技術</li>
+						<li><a href="http://voiplab.niu.edu.tw/pig/overview.html" style="color: blue;">展示畫面連結</a></li>
+					</ul>
+				</td>
+				<td width="60%" valign="middle" align="center">
+					<table>
+					<tr>
+						<td style="padding: 0em 1em;"><img id="im1" src="images/pighotel.PNG" width="500" style="margin-bottom: 0em;"></td>
+						<td style="padding: 0em 1em;"><img id="im2" src="images/linebot.jpg" height="244" style="margin-bottom: 0em;"></td>
+					</tr>
+					<tr>
+						<td align="center"><div>網頁介面</div></td>
+						<td align="center"><div>Line用戶端</div></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			<!-- <tr>
+				<td width="30%" valign="middle" align="left">基於LoRA長距離低功耗通訊架構之智慧農業服務物聯網雲端平台之研製(2/3)</td>
+				<td width="15%" valign="middle" align="center">計畫主持人</td>
+				<td width="15%" valign="middle" align="center">107/08/01-110/07/31</td>
+				<td width="15%" valign="middle" align="center">科技部(國科會)</td>
+				<td width="15%" valign="middle" align="center">執行中</td>
+			</tr> -->
+		</table>
+	</div>
+
+	<div style="width: 90%;margin:0 auto;padding: 1em 1em;">
+		<table width="100%" style="font-family: Microsoft JhengHei;font-size: 16px;border:8px #FFD382 groove;" border="1" cellpadding="10">
+			<tr id="tr2" style="font-weight:bold;font-size: 18px;">
+				<td width="25%" valign="middle" align="left">
+					<ol id="ol2" style="margin-block-end:0.3em;font-size: 20px;" start="2">
+						<li>仔豬受壓迫警示系統</li>
+					</ol>
+					<ul style="line-height: 150%; text-align: justify; text-justify:inter-ideograph;margin-block-end:0em;margin-left:0.5em;">
+						<li>自製IP Cam</li>
+						<li>戰情室介面</li>
+						<li>邊緣運算平台</li>
+						<li>LINE Notify</li>
+						<li>聲音辨識仔豬尖叫</li>
+						<li>人工智慧及資通訊技術</li>
+					</ul>
+				</td>
+				<td width="60%" valign="middle" align="center">
+					<table>
+					<tr>
+						<td style="padding: 0em 1em;"><img id="im3" src="images/pigfive.png" width="300" style="margin-bottom: 0em;"></td>
+						<td style="padding: 0em 1em;"><img id="im4" src="images/pigfive2.png" height="244" style="margin-bottom: 0em;"></td>
+					</tr>
+					<tr>
+						<td align="center"><div>實體模型</div></td>
+						<td align="center"><div>網頁介面</div></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			<!-- <tr>
+				<td width="30%" valign="middle" align="left">基於LoRA長距離低功耗通訊架構之智慧農業服務物聯網雲端平台之研製(2/3)</td>
+				<td width="15%" valign="middle" align="center">計畫主持人</td>
+				<td width="15%" valign="middle" align="center">107/08/01-110/07/31</td>
+				<td width="15%" valign="middle" align="center">科技部(國科會)</td>
+				<td width="15%" valign="middle" align="center">執行中</td>
+			</tr> -->
+		</table>
+	</div>
+	</div>
+	<div id="page" class="container" style="padding: 0em 0em;">
+		<div style="width: 80%;margin:0 auto;font-size: 30px;color:rgb(0, 89, 255);font-weight:bold;padding: 0.1em 0em;">近三年內參與之計畫</div>
+		<div style="width: 80%;margin:0 auto;font-size: 24px;color:rgb(0, 0, 0);font-weight:bold;">(一)、教育部</div>
+		<div style="width: 80%;margin:0 auto;padding: 1em 1em;">
+			<table width="100%" style="font-family: Microsoft JhengHei;font-size: 16px;border:8px #FFD382 groove;" border="1" cellpadding="10" border='0'>
+				<tr style="font-weight:bold;font-size: 18px;">
+					<td width="30%" valign="middle" align="left">計劃名稱</td>
+					<td width="15%" valign="middle" align="left">計畫內擔任工作</td>
+					<td width="15%" valign="middle" align="left">起訖年月</td>
+					<td width="15%" valign="middle" align="left">補助或委託機構</td>
+					<td width="15%" valign="middle" align="left">執行情形</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">109年度智慧聯網技術課程推廣計畫-網路技術與應用實驗</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">109/08/01-110/06/30</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">執行中</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">5G行動寬頻課程推廣計畫-無線網路、嵌入式系統實驗</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">109/08/01-110/07/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">執行中</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">109年度教育部資訊資源向上集中輔導團隊計畫</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">109/01/01-110/03/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">執行中</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">108年度智慧聯網技術與應用跨校教學聯盟中心計畫-課程(模組)發展計畫-物聯網感測器軟硬體平台與應用</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">108/04/01-109/03/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">108年度智慧聯網技術與應用跨校教學聯盟中心計畫-課程(模組)發展計畫-田間機器人資訊整合應用</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">108/04/01-109/03/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">108年度教育部資訊資源向上集中輔導團隊計畫</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">108/01/01-108/12/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">行動寬頻課程推廣計畫--LoRaWAN長距離低功耗網絡與應用實驗</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">107/12/01-109/01/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">107年度教育部資訊資源向上集中輔導團隊計畫</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">107/10/01-107/12/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">資通訊軟體創新人才推升推廣計畫-「雲端平台分散式大數據計算」</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">107/02/01-108/01/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">107年度資通訊軟體創新人才推升推廣計畫</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">107/02/01-108/01/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">106年度「智慧聯網技術與應用跨校教學聯盟中心」-田間機器人資通訊整合應用</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/11/06-108/03/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				
+				<tr>
+					<td width="30%" valign="middle" align="left">106年度「智慧聯網技術與應用跨校教學聯盟中心」-物聯網感應器軟硬體平台</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/11/06-108/03/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">教育部資訊資源向上集中輔導團隊計畫</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/10/01-107/09/30</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">教育部資安磐石計畫之專案管理計畫</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/03/15-107/03/14</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">106年提升校園行動應用服務研發及內容設計人才培育計畫</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/01/01- 106/12/31</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">行動寬頻尖端技術課程推廣計畫-「巨量資料分析技術與應用課程」</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">105/12/01-107/02/28</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">行動寬頻尖端技術課程推廣計畫-無線網路與行動通訊</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">105/12/01-107/02/28</td>
+					<td width="15%" valign="middle" align="center">教育部</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="page" class="container">
+	<div style="width: 80%;margin:0 auto;font-size: 24px;color:rgb(0, 0, 0);font-weight:bold;">(二)、科技部</div>
+	<div style="width: 80%;margin:0 auto;padding: 1em 1em;">
+		<table width="100%" style="font-family: Microsoft JhengHei;font-size: 16px;border:8px #FFD382 groove;" border="1" cellpadding="10" border='0'>
+			<tr style="font-weight:bold;font-size: 18px;">
+				<td width="30%" valign="middle" align="left">計劃名稱</td>
+				<td width="15%" valign="middle" align="left">計畫內擔任工作</td>
+				<td width="15%" valign="middle" align="left">起訖年月</td>
+				<td width="15%" valign="middle" align="left">補助或委託機構</td>
+				<td width="15%" valign="middle" align="left">執行情形</td>
+			</tr>
+			<tr>
+				<td width="30%" valign="middle" align="left">基於LoRA長距離低功耗通訊架構之智慧農業服務物聯網雲端平台之研製(2/3)</td>
+				<td width="15%" valign="middle" align="center">計畫主持人</td>
+				<td width="15%" valign="middle" align="center">107/08/01-110/07/31</td>
+				<td width="15%" valign="middle" align="center">科技部(國科會)</td>
+				<td width="15%" valign="middle" align="center">執行中</td>
+			</tr>
+			<tr>
+				<td width="30%" valign="middle" align="left">108年度大專學生研究計畫-低溫糧倉之智慧進出料偵測機制</td>
+				<td width="15%" valign="middle" align="center">計畫主持人</td>
+				<td width="15%" valign="middle" align="center">108/07/01-109/02/29</td>
+				<td width="15%" valign="middle" align="center">科技部(國科會)</td>
+				<td width="15%" valign="middle" align="center">已完成</td>
+			</tr>
+			<tr>
+				<td width="30%" valign="middle" align="left">基於LoRo長距離低功耗通訊架構之智慧農業服務物聯網雲端平台之研製</td>
+				<td width="15%" valign="middle" align="center">計畫主持人</td>
+				<td width="15%" valign="middle" align="center">107/10/01-108/09/30</td>
+				<td width="15%" valign="middle" align="center">科技部(國科會)</td>
+				<td width="15%" valign="middle" align="center">已完成</td>
+			</tr>
+			<tr>
+				<td width="30%" valign="middle" align="left">基於深度學習之後5G行動網路－子計畫三：基於深度學習之新世代核心 網資源管理之研究於後5G行動網路</td>
+				<td width="15%" valign="middle" align="center">計畫主持人</td>
+				<td width="15%" valign="middle" align="center">106/10/01-107/09/30</td>
+				<td width="15%" valign="middle" align="center">科技部</td>
+				<td width="15%" valign="middle" align="center">已完成</td>
+			</tr>
+			<tr>
+				<td width="30%" valign="middle" align="left">軟體定義網路為基礎之5G虛擬化封包核心網路中信令與資料分流機制</td>
+				<td width="15%" valign="middle" align="center">計畫主持人</td>
+				<td width="15%" valign="middle" align="center">106/08/01-107/07/31</td>
+				<td width="15%" valign="middle" align="center">科技部</td>
+				<td width="15%" valign="middle" align="center">已完成</td>
+			</tr>
+			<tr>
+				<td width="30%" valign="middle" align="left">媒體閘道器虛擬化與IMS智慧路由機制</td>
+				<td width="15%" valign="middle" align="center">計畫主持人</td>
+				<td width="15%" valign="middle" align="center">106/08/01-107/08/31</td>
+				<td width="15%" valign="middle" align="center">科技部</td>
+				<td width="15%" valign="middle" align="center">已完成</td>
+			</tr>
+		</table>
+	</div>
+	</div>
+	<div id="page" class="container">
+		<div style="width: 80%;margin:0 auto;font-size: 24px;color:rgb(0, 0, 0);font-weight:bold;">(三)、其它機構補助申請</div>
+		<div style="width: 80%;margin:0 auto;padding: 1em 1em;">
+			<table width="100%" style="font-family: Microsoft JhengHei;font-size: 16px;border:8px #FFD382 groove;" border="1" cellpadding="10" border='0'>
+				<tr style="font-weight:bold;font-size: 18px;">
+					<td width="30%" valign="middle" align="left">計劃名稱</td>
+					<td width="15%" valign="middle" align="left">計畫內擔任工作</td>
+					<td width="15%" valign="middle" align="left">起訖年月</td>
+					<td width="15%" valign="middle" align="left">補助或委託機構</td>
+					<td width="15%" valign="middle" align="left">執行情形</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">各界捐款-指定陳懷恩，舉辦5G Brainstorming Workshop及兩岸5G合作工作會議及推動學術研究發展及國際交流事宜</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">108/04/06-108/12/31</td>
+					<td width="15%" valign="middle" align="center">捐贈計畫</td>
+					<td width="15%" valign="middle" align="center">執行中</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">5G工業物聯網與標頭壓縮之研究</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">109/06/25-109/08/31</td>
+					<td width="15%" valign="middle" align="center">財團法人資訊工業策進會</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">蜜蜂觀測計畫</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">109/08/01-109/12/31</td>
+					<td width="15%" valign="middle" align="center">旺山休閒農場</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">簡易型淹水感測器之測試與功能驗證</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">108/05/01-108/05/31</td>
+					<td width="15%" valign="middle" align="center">維思網絡科技有限公司</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">基於5G之智慧農業物聯網研發與應用</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">108/01/01-108/12/31</td>
+					<td width="15%" valign="middle" align="center">財團法人工業技術研究院</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">各界捐款-指定陳懷恩，舉辦5G Brainstorming Workshop及兩岸5G合作工作會議及推動學術研究發展及國際交流事宜</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">107/04/06-107/12/31</td>
+					<td width="15%" valign="middle" align="center">捐贈計畫</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">小基站自組網路系統(SON Server)北向介面SAS-CBSD協定開發</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">107/02/01-107/12/31</td>
+					<td width="15%" valign="middle" align="center">財團法人工業技術研究院</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">5G專網應用於智慧農業之研究</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">107/01/01-107/12/31</td>
+					<td width="15%" valign="middle" align="center">財團法人工業技術研究院</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">vEPC於CORD平台上運行之效能及安全性評估案</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/12/08-106/12/25</td>
+					<td width="15%" valign="middle" align="center">財團法人資訊工業策進會</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">通訊協定安全檢測技術研究</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/04/01-107/03/31</td>
+					<td width="15%" valign="middle" align="center">安華聯網科技股份有限公司</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">5G核心網路元件開發</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/01/01-106/12/20</td>
+					<td width="15%" valign="middle" align="center">財團法人資訊工業策進會</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+				<tr>
+					<td width="30%" valign="middle" align="left">5G開放平台與物聯網整合服務研究</td>
+					<td width="15%" valign="middle" align="center">計畫主持人</td>
+					<td width="15%" valign="middle" align="center">106/01/01- 106/12/20</td>
+					<td width="15%" valign="middle" align="center">財團法人資訊工業策進會</td>
+					<td width="15%" valign="middle" align="center">已完成</td>
+				</tr>
+			</table>
+		</div>
+		</div>
+<div id="footer" class="footer" style="background-color: #f8f8f8; padding: 20px; font-family: 'Source Sans Pro', sans-serif; text-align: center; font-size: 1em;">
+    <div class="footer-content" style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+        <!-- 文字內容 -->
+<div class="footer-text-content" style="flex: 1; padding-right: 20px; text-align: left;">
+    <p class="footer-text" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;">
+        本網站著作權屬於宜蘭大學 資訊工程學系 VoIP Lab，請詳見:
+        <a class="footer-button" href="use.html" style="color: #0066cc; text-decoration: none;">使用規則</a>
+    </p>
+	
+    <p class="footer-text" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;"> 
+	    <span class="fa-solid fa-location-dot" style="color: #ff1a1a;"></span>
+		地址：260宜蘭縣宜蘭市神農路一段1號 格致大樓，請詳見:</i>     
+        <a class="footer-button" href="map.html" style="color: #0066cc; text-decoration: none;">宜大校園地圖</a>
+    </p>
+    <p class="footer-contact" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;">
+	    <span class="fa-solid fa-phone" style="color: #050505;"></span>
+        <span>電話：(03) 935-7400, 0972-570030 分機7315</span>		
+    </p>
+    <p class="footer-contact" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;">
+	    <span class="fa-solid fa-envelope" style="color: #000000;"></span>
+        <span>Email: <a href="mailto:voiplab.niu@gmail.com" style="color: #0066cc; text-decoration: none;">voiplab.niu@gmail.com</a></span>
+    </p>
+</div>
+
+        <!-- Google 地圖嵌入 -->
+        <div class="footer-map" style="flex: 1;">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d905.8637026250477!2d121.74487616074191!3d24.745590631761317!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3467e53784610ea7%3A0x2b30194cdd5ff11c!2z5ZyL56uL5a6c6Jit5aSn5a246Zu75qmf6LOH6KiK5a246Zmi!5e0!3m2!1szh-TW!2stw!4v1724739813598!5m2!1szh-TW!2stw" 
+                width="100%" 
+                height="300" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>	
+    </div> 
+	<p class="footer-address" style="margin: 10px 0; color: #666;">
+       &copy; Copyright 2024 NIU VoIP Lab. 建立於 2007/08
+    </p>	
+</div>
+</body>
+<script type="text/javascript">
+   
+	var useragent = navigator.userAgent;
+	useragent = useragent.toLowerCase();
+	var tr1 = document.getElementById("tr1");
+	var ol1 = document.getElementById("ol1");
+	var im1 = document.getElementById("im1");
+	var im2 = document.getElementById("im2");
+	var tr2 = document.getElementById("tr2");
+	var ol2 = document.getElementById("ol2");
+	var im3 = document.getElementById("im3");
+	var im4 = document.getElementById("im4");
+	if( useragent.indexOf('iphone') != -1 ){
+		tr1.style.fontSize="10px";
+		ol1.style.fontSize="12px";
+		im1.width="200";
+		im2.height="100";
+		tr2.style.fontSize="10px";
+		ol2.style.fontSize="12px";
+		im3.width="200";
+		im4.height="100";
+	} //iphone
+	// if( useragent.indexOf('iphone') != -1 ) location.replace("http://localhost:8899/Researchphone.html");
+</script>
+<script language="JavaScript">
+	//time----------------------------------------------
+	var timerID = null;
+	var timerRunning = false;
+	function stopclock (){
+	if(timerRunning)
+	clearTimeout(timerID);
+	timerRunning = false;}
+	function startclock () {
+	stopclock();
+	showtime();}
+
+	function showtime () {
+	var now = new Date();
+	var hours = now.getHours();
+	var minutes = now.getMinutes();
+	var seconds = now.getSeconds()
+	var timeValue = "" +((hours >= 12) ? "下午 " : "上午 " )
+	timeValue += ((hours >12) ? hours -12 :hours)
+	timeValue += ((minutes < 10) ? ":0" : ":") + minutes
+	timeValue += ((seconds < 10) ? ":0" : ":") + seconds
+	document.clock.thetime.value = timeValue;
+	timerID = setTimeout("showtime()",1000);
+	timerRunning = true;}
+
+	//whichday-----------------------------------------------
+	var whatday = document.getElementById("whatday");
+	var enabled = 0; today = new Date();
+	var day; var date;
+	if(today.getDay()==0) day = "週日."
+	if(today.getDay()==1) day = "週一."
+	if(today.getDay()==2) day = "週二."
+	if(today.getDay()==3) day = "週三."
+	if(today.getDay()==4) day = "週四."
+	if(today.getDay()==5) day = "週五."
+	if(today.getDay()==6) day = "週六."
+	document.fgColor = "000000";
+	date = (today.getFullYear()) + "." + (today.getMonth() + 1 ) + "." + today.getDate() + " " + day +"";
+	whatday.innerHTML=date;
+</script>  
+<script type ="text/javascript" charset ="utf-8">
+	$(window).load(function(){
+	  $('.flexslider').flexslider();
+	});
+</script>
+</html>

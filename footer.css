@@ -1,0 +1,37 @@
+#footer {
+        margin: 0px;
+        padding: 20px; /* 增加一點內邊距讓內容不貼邊 */
+        background: #F8F8F8 url('images/overlay.png') repeat;
+        font-family: 'Source Sans Pro', sans-serif;
+        font-size: 12pt;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.8);
+        text-align: center;
+    }
+
+    .footer-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .footer-text,
+    .footer-contact,
+    .footer-address {
+        margin-bottom: 10px;
+    }
+
+    .footer-button {
+        background-color: transparent;
+        border: none;
+        color: #007BFF;
+        cursor: pointer;
+        text-decoration: underline;
+        font-weight: 500;
+    }
+
+    .footer-button:hover {
+        text-decoration: none;
+    }
+
+
+

@@ -1,0 +1,35 @@
+.bulletin_board_wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .bulletin_board {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        padding: 20px;
+        margin: 20px;
+    }
+
+    .bulletin_board_text ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .bulletin_board_text li {
+        margin-bottom: 10px;
+        line-height: 1.6;
+        font-family: 'Arial', sans-serif;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .bulletin_board_text ul > li:first-child {
+        font-weight: bold;
+        margin-bottom: 20px;
+        font-size: 18px;
+        text-align: center;
+    }

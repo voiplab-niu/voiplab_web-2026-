@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <title>拉桿設置異常值</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color:#4fa8e3 ;
+        }
+        /* 背景移动动画 */
+        @keyframes moveBackground {
+            0% {
+                background-position: left bottom; /* 从左下角开始 */
+            }
+            100% {
+                background-position: right top; /* 移动到右上角 */
+            }
+        }
+        h1 {
+            text-align: center;
+            color: #000000;
+            margin-top: 20px;
+            animation: bounceIn 0.6s ease-in-out; /* 動態彈跳效果 */
+            font-size: 3rem;
+        }
+
+
+        /* 標題樣式 */
+        h3 {
+            text-align: center;
+            color: #000000;
+            margin-top: 20px;
+            font-size: 3rem;
+            font-weight: 600;
+            animation: bounceIn 0.6s ease-in-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #000000;
+            margin-top: 20px;
+            animation: bounceIn 0.6s ease-in-out;
+        }
+
+        /* 設置異常值的區域樣式 */
+        #alertSettings {
+            background-color: rgba(255, 255, 255, 1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: 30px auto;
+            animation: slideIn 0.8s ease-out;
+            border: 1px solid #dde2e8;
+        }
+
+        /* 輸入框樣式 */
+        *,
+        *:after{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins",sans-serif;
+        }
+        
+        .wrapper{
+            position: relative;
+            width: 95vmin;
+            background-color: #ffffff;
+            padding: 50px 40px 20px 40px;
+            border-radius: 10px;
+        }
+        .container{
+            position: relative;
+            width: 100%;
+            height: 100px;
+            margin-top: 30px;
+        }
+        input[type="range"]{
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%;
+            outline: none;
+            position: absolute;
+            margin: auto;
+            top: 0;
+            bottom: 0;
+            background-color: transparent;
+            pointer-events: none;
+        }
+        .slider-track{
+            width: 100%;
+            height: 5px;
+            position: absolute;
+            margin: auto;
+            top: 0;
+            bottom: 0;
+            border-radius: 5px;
+        }
+        /*不同瀏覽器的滑桿*/
+        input[type="range"]::-webkit-slider-runnable-track{
+            -webkit-appearance: none;
+            height: 5px;
+        }
+        input[type="range"]::-moz-range-track{
+            -moz-appearance: none;
+            height: 5px;
+        }
+        input[type="range"]::-ms-track{
+            appearance: none;
+            height: 5px;
+        }
+        /*不同瀏覽器的滑塊*/
+        input[type="range"]::-webkit-slider-thumb{
+            -webkit-appearance: none;
+            height: 1.7em;
+            width: 1.7em;
+            background-color: #3264fe;
+            cursor: pointer;
+            margin-top: -9px;
+            pointer-events: auto;
+            border-radius: 50%;
+        }
+        input[type="range"]::-moz-range-thumb{
+            height: 1.7em;
+            width: 1.7em;
+            cursor: pointer;
+            border-radius: 50%;
+            background-color: #5da3ee;
+            pointer-events: auto;
+        }
+        input[type="range"]::-ms-thumb{
+            appearance: none;
+            height: 1.7em;
+            width: 1.7em;
+            cursor: pointer;
+            border-radius: 50%;
+            background-color: #5da3ee;
+            pointer-events: auto;
+        }
+        input[type="range"]:active::-webkit-slider-thumb{
+            background-color: #ffffff;
+            border: 3px solid #5da3ee;
+        }
+        .values{
+            background-color: #5da3ee;
+            width: 50%;
+            top: 50px;
+            position: relative;
+            margin: auto; ;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight:300 ;
+            font-size: 30px;
+            color: #ffffff;
+        }
+
+        /* 按鈕樣式 */
+        #saveThresholds {
+            margin-top: 30px;
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background-color 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        #saveThresholds:hover {
+            background-color: #2980b9;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 動畫效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        #menuButton {
+            position: fixed; /* 使用 fixed 以确保按钮始终可见 */
+            top: 20px; 
+            left: 20px; 
+            width: 60px; /* 稍大一点的按钮 */
+            height: 60px;   
+            background-size: contain; /* 保持图标比例 */
+            background-color: transparent; /* 透明背景 */
+            border: none; 
+            border-radius: 10px; /* 圆角效果 */
+            cursor: pointer;
+            z-index: 1000; /* 确保按钮在其他内容上方 */
+            transition: background-color 0.3s, transform 0.3s; /* 平滑过渡效果 */
+        }
+        #menuButton:hover {
+            transform: scale(1.1); /* 鼠标悬停时按钮放大 */
+        }
+        #menuButton img {
+            
+            width: 60px; /* 你可以根據需要調整圖像的大小 */
+            height: auto;
+            margin: 0; /* 去除可能的邊距 */
+
+        }
+        
+        #sideMenu {
+            position: fixed;/* 固定定位，讓菜單保持在窗口中 */
+            top: 0; /* 菜單距離視口上方0像素 */
+            left: -230px; /* 初始隐藏 */
+            width: 220px;
+            height:100%;
+            background-color: #4fc3f7;
+            color: #ffffff00;
+            padding-top: 6%; /*菜單頂部留出80像素的內邊距*/
+            transition: left 0.3s ease, box-shadow 0.3s ease; /* 左側滑動和陰影的過渡效果 */
+            z-index: 999;
+            border-radius: 8px; /* 圓角 */
+            box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2); /* 為菜單添加陰影效果*/
+        }
+
+        #sideMenu a {
+            padding: 15px 10px;
+            display: block;
+            color: white;
+            width: auto;
+            text-decoration: none;
+            font-size: 25px ; 
+            transition: background-color 0.3s, padding-left 0.3s; 
+            
+        }
+        #sideMenu a:hover {
+            background-color: #1f6d8e; /* 更深的背景色 */
+            border-left: 4px solid #ffffff; /* 左侧边框效果 */
+            padding-left: 20px; /* 鼠标悬停时的内边距 */
+        }
+
+        .dropdown {
+            position: relative; /* 設置相對定位，以便下拉內容能夠相對於這個元素定位 */
+            cursor: pointer; /* 鼠標懸停時顯示為手型光標 */
+        }
+        .dropdown-content {
+            display: none; /* 初始隱藏 */
+            position: absolute; /* 絕對定位 */
+            left: 100%; /* 顯示在父項的左側 */
+            top: 0; /* 在父項下方顯示 */
+            width: 220px; /* 調整寬度 */
+            background-color: #37d0db; /* 背景顏色 */
+            color: #ffffff; /* 文字顏色 */
+            border-radius: 8px; /* 圓角效果 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 陰影效果 */
+            z-index: 1000; /* 確保在其他內容之上 */
+            transition: opacity 0.3s ease, visibility 0.3s ease; /* 平滑過渡效果 */
+            opacity: 0; /* 初始透明度 */
+            visibility: hidden; /* 初始隱藏 */
+        }
+        .dropdown:hover .dropdown-content {
+            display: block; /* 顯示下拉內容 */
+            opacity: 1; /* 變為可見 */
+            visibility: visible; /* 使元素可見 */
+        }
+        .dropdown-content a {
+            padding: 15px 25px; /* 內邊距 */
+            display: block; /* 塊級元素 */
+            color: white; /* 文字顏色 */
+            text-decoration: none; /* 去掉下劃線 */
+            font-size: 14px; /* 字體大小 */
+            transition: background-color 0.3s ease; /* 平滑過渡效果 */
+        }
+        .dropdown-content a:hover {
+            background-color: #1f6d8e; /* 鼠標懸停時的背景顏色 */
+            border-left: 4px solid #ffffff; /* 左側邊框效果 */
+            padding-left: 30px; /* 鼠標懸停時的內邊距 */
+        }
+        .menu-item {
+            display: flex;
+            align-items: center; /* 確保圖片和文本垂直居中對齊 */
+            padding-left: 10px; /* 根據需要調整間距 */  
+            text-align: left ; /* 讓文字靠左對齊 */  
+        }
+        .menu-icon {
+            border: none; /* 移除圖片的邊框 */
+            width: 24px; /* 設置圖片寬度 */
+            height: 25px; /* 設置圖片高度 */
+            margin-right: 10px; /* 調整圖片和文本之間的間距 */
+            position: absolute; /* 絕對定位 */
+            right: 10px;
+            margin-top: 5px;
+            
+        }
+
+        .menu-text {
+            flex-grow: 1; /* 讓文字區域占據剩餘空間並推動圖片到右邊 */
+        }
+        
+        #SQR {
+            background-color: #4fc3f7; /* 淺藍色按鈕 */
+            color: #ffffff; /* 按鈕文字顏色 */
+            border: none;
+            padding: 10px 5px;
+            margin: 5px;
+            width: 95%; /* 寬度 100% */
+            height: 100%; /* 高度 100% */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 25px ; 
+            text-align: left; /* 文字靠左 */
+        }
+        #SQR:hover {
+        background-color: #0288d1; /* 滑鼠懸停時變深的藍色 */
+        }
+
+        #SLQR {
+            background-color: #4fc3f7; /* 淺藍色按鈕 */
+            color: #ffffff; /* 按鈕文字顏色 */
+            border: none;
+            padding: 10px 5px;
+            margin: 5px;
+            width: 95%; /* 寬度 100% */
+            height: 100%; /* 高度 100% */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 25px ; 
+            text-align: left; /* 文字靠左 */
+        }
+        #SLQR:hover {
+        background-color: #0288d1; /* 滑鼠懸停時變深的藍色 */
+        }
+        /* 遮罩層 */
+.modal-overlay {
+    display: none;  /* 預設隱藏 */
+    position: fixed;
+    z-index: 999; /* 讓遮罩層在最上層 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色遮罩 */
+}
+
+/* 正方形的模態框內容 */
+.modal {
+    display: flex;  /* 保持顯示 */
+    position: fixed;
+    z-index: 1000; /* 確保模態框在遮罩層之上 */
+    left: 50%;
+    top: 50%; /* 調整到畫面中央 */
+    transform: translate(-50%, -50%) scale(0.1); /* 初始時居中並縮小 */
+    width: 400px;
+    height: 400px;
+    background-color: #fefefe;
+    padding: 20px;
+    border-radius: 15px; /* 設置圓角 */
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #888;
+    animation: modalOpen 0.5s ease-out forwards; /* 開啟時動畫 */
+}
+
+/* 文字設置 */
+#modalMessage {
+    font-size: 28px; /* 放大字體 */
+    font-weight: bold; /* 加粗字體 */
+    text-align: center;
+    margin-bottom: 20px; /* 讓文字和確認按鈕之間有空間 */
+    margin-top: 20%;
+}
+
+/* 確認按鈕 */
+#confirmButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 5px;
+    margin-top: 120px;
+    margin-left: 130px;
+}
+
+#confirmButton:hover {
+    background-color: #45a049;
+}
+
+/* 字體設置 */
+#modalMessage {
+    font-size: 24px;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 開啟時的動畫效果 */
+@keyframes modalOpen {
+    0% {
+        transform: translate(-50%, -50%) scale(0.1); /* 初始狀態縮小並居中 */
+        opacity: 0; /* 初始透明度 */
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1); /* 最終顯示大小並保持居中 */
+        opacity: 1; /* 完全顯示 */
+    }
+}
+        @media (max-width: 768px) {
+            .values{
+            width: 80%;
+            }
+            #menuButton {
+                position: fixed; /* 使用 fixed 以确保按钮始终可见 */
+                width: 60px; /* 稍大一点的按钮 */
+                height: 60px;   
+                background-size: contain; /* 保持图标比例 */
+                background-color: transparent; /* 透明背景 */
+                border: none; 
+                border-radius: 10px; /* 圆角效果 */
+                cursor: pointer;
+                z-index: 1000; /* 确保按钮在其他内容上方 */
+                transition: background-color 0.3s, transform 0.3s; /* 平滑过渡效果 */
+            }
+            #sideMenu {
+                position: fixed;/* 固定定位，讓菜單保持在窗口中 */
+                padding-top: 6%; /*菜單頂部留出80像素的內邊距*/
+                left: -230px; /* 初始隐藏 */
+                width: 200px;
+                height:100%;
+                background-color: #4fc3f7;
+                color: #ffffff00;
+                padding-top: 20%; /*菜單頂部留出80像素的內邊距*/
+                transition: left 0.3s ease, box-shadow 0.3s ease; /* 左側滑動和陰影的過渡效果 */
+                z-index: 999;
+                border-radius: 8px; /* 圓角 */
+                box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2); /* 為菜單添加陰影效果*/
+            }
+            #sideMenu a {
+                padding: 15px 10px;
+                display: block;
+                color: white;
+                width: auto;
+                text-decoration: none;
+                font-size: 25px ;
+                transition: background-color 0.3s, padding-left 0.3s; 
+                
+            }
+            .dropdown-content {
+                display: none; /* 初始隱藏 */
+                position: absolute; /* 絕對定位 */
+                left: 100%; /* 顯示在父項的左側 */
+                top: 0; /* 在父項下方顯示 */
+                width: 80%; /* 調整寬度 */
+                background-color: #37d0db; /* 背景顏色 */
+                color: #ffffff; /* 文字顏色 */
+                border-radius: 8px; /* 圓角效果 */
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 陰影效果 */
+                z-index: 1000; /* 確保在其他內容之上 */
+                transition: opacity 0.3s ease, visibility 0.3s ease; /* 平滑過渡效果 */
+                opacity: 0; /* 初始透明度 */
+                visibility: hidden; /* 初始隱藏 */
+            }
+            h1 {
+            font-size: 2rem;
+            }
+            .modal {
+                display: none;  /* 預設隱藏 */
+                position: fixed;
+                z-index: 1000; /* 確保模態框在遮罩層之上 */
+                left: 50%;
+                top: 25%; /* 讓模態框稍微上移 */
+                transform: translateX(-50%); /* 水平居中 */
+                width: 300px;
+                height: 300px;
+
+            }
+
+            /* 文字設置 */
+            #modalMessage {
+                font-size: 20px; /* 放大字體 */
+                font-weight: bold; /* 加粗字體 */
+                text-align: center;
+                margin-bottom: 20px; /* 讓文字和確認按鈕之間有空間 */
+                margin-top: 20%
+            }
+
+            /* 確認按鈕 */
+            #confirmButton {
+                background-color: #4CAF50;
+                color: white;
+                padding: 12px 24px;
+                border: none;
+                cursor: pointer;
+                font-size: 20px;
+                border-radius: 5px;
+                margin-top: 100px;
+                margin-left: 33%;
+            }
+
+            /* 字體設置 */
+            #modalMessage {
+                font-size: 20px;
+            }
+                    }
+    </style>
+</head>
+<body>
+    <button id="menuButton" onclick="toggleMenu()">
+        <img src="{{ url_for('static', filename='images/list.png') }}" alt="Menu Icon">
+    </button>
+    <div id="sideMenu">
+        <button id="menuButton" onclick="toggleMenu()"></button>
+        <a href="/fish_farm/" class="menu-item" id="homeLink">
+            回到主頁 <img src="{{ url_for('static', filename='images/home.png') }}" alt="Home" class="menu-icon">
+        </a>
+        <div class="dropdown">    
+            <a href="#" class="menu-item">
+                <span class="menu-text">監測系統</span>
+                <img src="{{ url_for('static', filename='images/view.png') }}" alt="" class="menu-icon">
+            </a>
+            <div class="dropdown-content">
+                <a href="fish1.html">魚池一</a>
+                <a href="fish2.html">魚池二</a>
+                <a href="fish3.html">魚池三</a>
+               
+            </div>
+        </div>
+        
+        <div class="dropdown">
+            <a href="#" class="menu-item">
+                異常值設定<img src="{{ url_for('static', filename='images/warning.png') }}" alt="" class="menu-icon">
+            </a>
+            <div class="dropdown-content">
+                <a href="alertSettings.html">文字輸入</a>
+                <a href="line.html">拉桿輸入</a>
+            </div>
+        </div>
+        <div id="buttonContainer">
+            <button id ="SQR"onclick="startQRScanner()">掃描 QR Code</button>
+            
+        </div>
+    </div>
+    
+    </div>
+    <h1>拉桿輸入異常值</h1>
+
+        <form id="alertSettingsForm" novalidate>
+            <!-- 遮罩層 -->
+<div id="modalOverlay" class="modal-overlay"></div>
+
+<!-- 模態框 -->
+<div id="modal" class="modal">
+    <p id="modalMessage"></p>
+    <button id="confirmButton">確認</button> <!-- 使用確認按鈕 -->
+</div>
+            <div id="alertSettings">
+                
+                <div id="lastUpdatedTime" style="text-align: left; font-size: 1.4rem; color: #000000; margin-bottom: 25px;">
+                    最後更新時間: 
+                    <span id="timeValue" style="display: block;">尚未更新</span>
+                </div>
+                <div class="values">溫度範圍<br> 
+                    <span id="range1">
+                    </span>
+                    <span> &dash; </span>
+                    <span id="range2">
+                    </span>
+                    <span>°C</span>
+                </div>
+                <div class="container">
+                    <div class="slider-track " id="slider-11"></div>
+                    <input type="range" min="0" max="100"  id="tempMin" step="0.1"oninput="slideOne()">
+                    <input type="range" min="0" max="100" id="tempMax" step="0.1"oninput="slideTwo()">
+                </div>
+                <div class="values">pH範圍<br> 
+                    <span id="range3">
+                    </span>
+                    <span> &dash; </span>
+                    <span id="range4">
+                    </span>
+                </div>
+                <div class="container">
+                    <div class="slider-track" id="slider-12"></div>
+                    <input type="range" min="0" max="14" id="pHMin" oninput="slidethree()">
+                    <input type="range" min="0" max="14" id="pHMax" oninput="slidefour()">
+                </div>
+                <div class="values">溶氧量<br> 
+                    <span id="range5">
+                    </span>
+                    <span> &dash; </span>
+                    <span id="range6">
+                    </span>
+                    <span>mg/L</span>
+                </div>
+                <div class="container">
+                    <div class="slider-track " id="slider-13"></div>
+                    <input type="range" min="0" max="10"id="doMin" oninput="slidefive()">
+                    <input type="range" min="0" max="10" id="doMax" oninput="slidesix()">
+                </div>
+                <div class="values">氧化還原電位<br> 
+                    <span id="range7">
+                    </span>
+                    <span> &dash; </span>
+                    <span id="range8">
+                    </span>
+                    <span>mV</span>
+                </div>
+                <div class="container">
+                    <div class="slider-track " id="slider-14"></div>
+                    <input type="range" min="0" max="500"  id="orpMin" oninput="slideseven()">
+                    <input type="range" min="0" max="500"  id="orpMax" oninput="slideeight()">
+                </div>
+                <div class="values">鹽濃度<br> 
+                    <span id="range9">
+                    </span>
+                    <span> &dash; </span>
+                    <span id="range10">
+                    </span>
+                    <span>%</span>
+                </div>
+                <div class="container">
+                    <div class="slider-track " id="slider-15"></div>
+                    <input type="range" min="0" max="20"  id="saltMin" oninput="slidenine()">
+                    <input type="range" min="0" max="20"  id="saltMax" oninput="slideten()">
+                </div>
+            
+                <button id="saveThresholds" type="button">設置異常值</button>
+            
+        </form>
+        
+    <script>
+        window.onload = function(){
+                slideOne();
+                slideTwo();
+                slidethree();
+                slidefour();
+                slidefive();
+                slidesix();
+                slideseven();    
+                slideeight();
+                slidenine();
+                slideten();
+            }
+        function toggleMenu() {
+            const sideMenu = document.getElementById('sideMenu');
+            // 判斷側邊菜單當前的顯示狀態，進行切換
+            if (sideMenu.style.left === '0px') {
+                sideMenu.style.left = '-250px'; // 隱藏菜單
+            } else {
+                sideMenu.style.left = '0px'; // 顯示菜單
+            }
+        }
+        
+
+
+
+        let minGap = 1;
+        let sliderOne = document.getElementById("tempMin");
+        let sliderTwo = document.getElementById("tempMax");
+        let displayValOne = document.getElementById("range1");
+        let displayValTwo = document.getElementById("range2");
+        let sliderTrack1 = document.getElementById("slider-11"); 
+        let sliderMaxValue = document.getElementById("tempMin").max;
+
+        let sliderthree = document.getElementById("pHMin");
+        let sliderfour = document.getElementById("pHMax");
+        let displayValthree = document.getElementById("range3");
+        let displayValfour = document.getElementById("range4");
+        let sliderTrack2 = document.getElementById("slider-12"); 
+        let sliderMaxValue3 = document.getElementById("pHMin").max;
+
+        let sliderfive = document.getElementById("doMin");
+        let slidersix = document.getElementById("doMax");
+        let displayValfive = document.getElementById("range5");
+        let displayValsix = document.getElementById("range6");
+        let sliderTrack3 = document.getElementById("slider-13"); 
+        let sliderMaxValue5 = document.getElementById("doMin").max;
+
+        let sliderseven = document.getElementById("orpMin");
+        let slidereight = document.getElementById("orpMax");
+        let displayValseven = document.getElementById("range7");
+        let displayValeight = document.getElementById("range8");
+        let sliderTrack4 = document.getElementById("slider-14"); 
+        let sliderMaxValue7 = document.getElementById("orpMin").max;
+
+        let slidernine = document.getElementById("saltMin");
+        let sliderten = document.getElementById("saltMax");
+        let displayValnine = document.getElementById("range9");
+        let displayValten = document.getElementById("range10");
+        let sliderTrack5 = document.getElementById("slider-15"); 
+        let sliderMaxValue9 = document.getElementById("saltMin").max;
+
+        function slideOne(){
+            if(parseInt(sliderTwo.value) - parseInt(sliderOne.value) <= minGap){
+                sliderOne.value = parseInt(sliderTwo.value) - minGap;
+            }
+            displayValOne.textContent = sliderOne.value;
+            fillColor();
+        }
+        function slideTwo(){
+            if(parseInt(sliderTwo.value) - parseInt(sliderOne.value) <= minGap){
+                sliderTwo.value = parseInt(sliderOne.value) + minGap;
+            }
+            displayValTwo.textContent = sliderTwo.value;
+            fillColor();
+        }
+        function slidethree(){
+            if(parseInt(sliderfour.value) - parseInt(sliderthree.value) <= minGap){
+                sliderthree.value = parseInt(sliderfour.value) - minGap;
+            }
+            displayValthree.textContent = sliderthree.value;
+            fillColor2();
+        }
+        function slidefour(){
+            if(parseInt(sliderfour.value) - parseInt(sliderthree.value) <= minGap){
+                sliderfour.value = parseInt(sliderthree.value) + minGap;
+            }
+            displayValfour.textContent = sliderfour.value;
+            fillColor2();
+        }
+
+        function slidefive(){
+            if(parseInt(slidersix.value) - parseInt(sliderfive.value) <= minGap){
+                sliderfive.value = parseInt(slidersix.value) - minGap;
+            }
+            displayValfive.textContent = sliderfive.value;
+            fillColor3();
+        }
+        function slidesix(){
+            if(parseInt(slidersix.value) - parseInt(sliderfive.value) <= minGap){
+                slidersix.value = parseInt(sliderfive.value) + minGap;
+            }
+            displayValsix.textContent = slidersix.value;
+            fillColor3();
+        }
+
+        function slideseven(){
+            if(parseInt(slidereight.value) - parseInt(sliderseven.value) <= minGap){
+                sliderseven.value = parseInt(slidereight.value) - minGap;
+            }
+            displayValseven.textContent = sliderseven.value;
+            fillColor4();
+        }
+        function slideeight(){
+            if(parseInt(slidereight.value) - parseInt(sliderseven.value) <= minGap){
+                slidereight.value = parseInt(sliderseven.value) + minGap;
+            }
+            displayValeight.textContent = slidereight.value;
+            fillColor4();
+        }
+
+        function slidenine(){
+            if(parseInt(sliderten.value) - parseInt(slidernine.value) <= minGap){
+                slidernine.value = parseInt(sliderten.value) - minGap;
+            }
+            displayValnine.textContent = slidernine.value;
+            fillColor5();
+        }
+        function slideten(){
+            if(parseInt(sliderten.value) - parseInt(slidernine.value) <= minGap){
+                sliderten.value = parseInt(slidernine.value) + minGap;
+            }
+            displayValten.textContent = sliderten.value;
+            fillColor5();
+        }
+        function fillColor(){
+            percent1 = (sliderOne.value / sliderMaxValue) * 100;
+            percent2 = (sliderTwo.value / sliderMaxValue) * 100;
+            sliderTrack1.style.background = `linear-gradient(to right, #dadae5 ${percent1}% , #3264fe ${percent1}% , #3264fe ${percent2}%, #dadae5 ${percent2}%)`;
+        }
+        function fillColor2(){
+            percent1 = (sliderthree.value / sliderMaxValue3) * 100;
+            percent2 = (sliderfour.value / sliderMaxValue3) * 100;
+            sliderTrack2.style.background = `linear-gradient(to right, #dadae5 ${percent1}% , #3264fe ${percent1}% , #3264fe ${percent2}%, #dadae5 ${percent2}%)`;
+        }
+        function fillColor3(){
+            percent1 = (sliderfive.value / sliderMaxValue5) * 100;
+            percent2 = (slidersix.value / sliderMaxValue5) * 100;
+            sliderTrack3.style.background = `linear-gradient(to right, #dadae5 ${percent1}% , #3264fe ${percent1}% , #3264fe ${percent2}%, #dadae5 ${percent2}%)`;
+        }
+        function fillColor4(){
+            percent1 = (sliderseven.value / sliderMaxValue7) * 100;
+            percent2 = (slidereight.value / sliderMaxValue7) * 100;
+            sliderTrack4.style.background = `linear-gradient(to right, #dadae5 ${percent1}% , #3264fe ${percent1}% , #3264fe ${percent2}%, #dadae5 ${percent2}%)`;
+        }
+        function fillColor5(){
+            percent1 = (slidernine.value / sliderMaxValue9) * 100;
+            percent2 = (sliderten.value / sliderMaxValue9) * 100;
+            sliderTrack5.style.background = `linear-gradient(to right, #dadae5 ${percent1}% , #3264fe ${percent1}% , #3264fe ${percent2}%, #dadae5 ${percent2}%)`;
+        }
+
+        
+        const saveButton = document.getElementById('saveThresholds');
+const modal = document.getElementById('modal');  // 取得模態框
+const modalOverlay = document.getElementById('modalOverlay');  // 取得遮罩層
+const modalMessage = document.getElementById('modalMessage');  // 取得顯示訊息區
+const confirmButton = document.getElementById('confirmButton');  // 取得確認按鈕
+
+// 初始時確保模態框和遮罩層隱藏
+modal.style.display = "none";
+modalOverlay.style.display = "none";
+      
+
+        // 設置異常值按鈕點擊事件
+        saveButton.addEventListener('click', function() {
+            // 數據對象
+            const data = {
+                tempMin: document.getElementById('tempMin').value,
+                tempMax: document.getElementById('tempMax').value,
+                pHMin: document.getElementById('pHMin').value,
+                pHMax: document.getElementById('pHMax').value,
+                doMin: document.getElementById('doMin').value,
+                doMax: document.getElementById('doMax').value,
+                orpMin: document.getElementById('orpMin').value,
+                orpMax: document.getElementById('orpMax').value,
+                saltMin: document.getElementById('saltMin').value,
+                saltMax: document.getElementById('saltMax').value
+            };
+
+            // 發送數據到後端
+            fetch('/fish_farm/save-alert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    modalMessage.textContent = "異常值已成功保存！";
+                    modal.style.display = "block";  // 顯示模態框
+                    modalOverlay.style.display = "block";  // 顯示遮罩層
+                } else {
+                    modalMessage.textContent = "保存異常值時發生錯誤。請稍後再試。";
+                    modal.style.display = "block";  // 顯示模態框
+                    modalOverlay.style.display = "block";  // 顯示遮罩層
+                }
+            })
+            .catch(error => {
+                modalMessage.textContent = "儲存異常值失敗: " + error.message;
+                modal.style.display = "block";  // 顯示模態框
+                modalOverlay.style.display = "block";  // 顯示遮罩層
+            });
+        });
+        confirmButton.addEventListener('click', function() {
+            modal.style.display = "none";  // 隱藏模態框
+            modalOverlay.style.display = "none";  // 隱藏遮罩層
+        });
+
+        // 页面加载时获取并回填当前的异常值
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/fish_farm/get-alert-thresholds')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('tempMin').value = data.temp_Min;
+                    document.getElementById('tempMax').value = data.temp_Max;
+                    document.getElementById('pHMin').value = data.phMin;
+                    document.getElementById('pHMax').value = data.phMax;
+                    document.getElementById('doMin').value = data.doMin;
+                    document.getElementById('doMax').value = data.doMax;
+                    document.getElementById('orpMin').value = data.orpMin;
+                    document.getElementById('orpMax').value = data.orpMax;
+                    document.getElementById('saltMin').value = data.saltMin;
+                    document.getElementById('saltMax').value = data.saltMax;
+                    const formattedTime = new Date(data.time).toLocaleString('zh-TW', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    slideOne();
+                    slideTwo();
+                    slidethree();
+                    slidefour();
+                    slidefive();
+                    slidesix();
+                    slideseven();
+                    slideeight();
+                    slidenine();
+                    slideten();
+                    document.getElementById('timeValue').textContent = formattedTime;
+
+                })
+                .catch(error => {
+                    console.error('發生錯誤：', error);
+                });
+                
+        });
+         </script>
+    </body>
+    </html>

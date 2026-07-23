@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>魚之國之謎</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; background: #0b1020; color: #e8ecf2; min-height: 100vh; display: flex; flex-direction: column; }
+    header { padding: 16px; background: #1a2238; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 10; }
+    header button { padding: 8px 14px; border: none; border-radius: 6px; background: #5eead4; color: #0b1020; cursor: pointer; }
+    header button:hover { background: #38b2ac; color: #fff; }
+    main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; }
+    section { display: none; width: 100%; max-width: 600px; text-align: center; }
+    .active { display: block; }
+    h1 { margin-bottom: 20px; }
+    .story { font-size: 1.1em; line-height: 1.6; background: rgba(255,255,255,0.05); padding: 16px; border-radius: 10px; }
+    .wall-image { margin-top: 20px; width: 80%; max-width: 400px; border-radius: 10px; }
+	.wall-image2 { margin-top: 20px; width: 100%; max-width: 600px; border-radius: 10px; }
+.artifact {
+  margin: 10px;
+  width: 80px;
+  height: 80px;
+  background: #5eead4;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.artifact img {
+  max-width: 70%;
+  max-height: 70%;
+  object-fit: contain;
+  pointer-events: none; /* 避免圖片擋到點擊 */
+}
+
+.artifact:hover {
+  background: #38b2ac;
+  transform: scale(1.1);
+  transition: transform 0.2s, background 0.2s;
+}
+.video-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+}
+
+#video, #overlay {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+#overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+  </style>
+</head>
+<body>
+  <header id="nav">
+    <button onclick="showSection('home')">神祕門</button>
+    <button onclick="showSection('puzzle1')">告示牌</button>
+	<button onclick="showSection('scanner')">深海指引者</button>
+  </header>
+  <main>
+    <section id="home" class="active">
+      <h1>打開的神祕門</h1>
+      <div class="story">
+        在一陣煙霧後，旁邊的石牆猛然向兩側滑開<br><br>
+        原以為會有一條通道的你，發現後面出現了另外一面石牆。<br><br>
+        牆上出現了許多的按鈕，以及一段文字...<br><br>
+		同時附近也出現了一段悠揚的音樂，<br><br>
+		你感覺只要找到音樂的源頭就可以有一些線索...
+      </div>
+      <img src="ONE.png" alt="石牆" class="wall-image" />
+	<div style="margin-top:20px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+	  <!-- 答案 (a1-a6.png) -->
+	  <div class="artifact" onclick="unlockStep(3)">
+		<img src="a1.png" alt="a1" />
+	  </div>
+	  <div class="artifact"><img src="dollar.png" alt="rock" /></div>
+	  	  <div class="artifact" onclick="unlockStep(4)">
+		<img src="a4.png" alt="a4" />
+	  </div>
+	  <div class="artifact" onclick="unlockStep(2)">
+		<img src="a5.png" alt="a5" />
+	  </div>
+	  <div class="artifact"><img src="life-ring.png" alt="shell" /></div>
+	  <div class="artifact"><img src="lock.png" alt="fish" /></div>
+	  	  
+	  <div class="artifact" onclick="unlockStep(1)">
+		<img src="a3.png" alt="a3" />
+	  </div>
+	  <div class="artifact"><img src="croissant.png" alt="wave" /></div>
+	  <div class="artifact" onclick="unlockStep(5)">
+		<img src="a6.png" alt="a6" />
+	  </div>
+	  <div class="artifact"><img src="football.png" alt="star" /></div>
+	  <div class="artifact"><img src="fish.png" alt="moon" /></div>
+	  <div class="artifact" onclick="unlockStep(6)">
+		<img src="a2.png" alt="a2" />
+	  </div>
+	</div>
+	</section>
+
+    <section id="scanner">
+      <h2>似乎可以掃描什麼</h2>
+      <div class="video-wrap">
+        <video id="video" playsinline muted></video>
+        <canvas id="overlay"></canvas>
+      </div>
+      <ul id="menu"></ul>
+    </section>
+
+    <section id="puzzle1">
+      <h2>牆壁附近的告示牌</h2>
+      <p>在石門附近有一個怪異的告示牌，上面的一些圖案吸引你的注意!</p>
+	  <img src="Sign.png" alt="告示牌" class="wall-image" />
+    </section>
+
+    <section id="puzzle2">
+      <h2>隱藏的道路</h2>
+      <p>透過深海指引者你發現一條隱藏的道路，順著道路走下去，在道路盡頭發現了三個文字石塊</p>
+	  <img src="stonepic.png" alt="石牌" class="wall-image" />
+	  <p>再這些文字旁邊掉落了一張紙，但有一些破損了，只能隱約看出破損的似乎是同一個數字...</p>
+	  <img src="stone.png" alt="紙" class="wall-image" id="stone"/>
+	</section>
+
+    <section id="puzzle3">
+      <h2>開啟的石門</h2>
+      <p>在石牆打開後，出現一條曲折蜿蜒的道路</p>
+	  <p>道路盡頭似乎有一個祭壇，你正苦思著要如何穿過這裡...</p>
+	  <p>忽然發現在不遠處有一扇門，但門上沒有任何手把以及鑰匙孔</p>
+	  <p>只有一幅畫掛在上面，如果能打開的話似乎可以直接抵達終點...</p>
+	  <img src="hold.png" alt="紙" class="wall-image" id="stone"/>
+	  <p>總覺得這幅畫很眼熟....說著你四處走訪，希望能找出開門的方法</p>
+	  <img src="rain.png" alt="地圖" class="wall-image" id="stone"/>
+    </section>
+	
+	<section id="puzzle4">
+      <h2>祭壇位置</h2>
+      <p>將門打開後，你發現有一條直通最後祭壇的道路，在祭壇上裡著一封信...(請找出祭壇)</p>
+	  <img src="vase.png" alt="祭壇" class="wall-image2" id="stone"/>
+    </section>
+	<section id="puzzle5">
+      <h2>魚之國戰</h2>
+      <p>當你把花與深海指引者一同供奉在祭壇時</p>
+	  <p>一段不屬魚你的記憶湧進，你發現這是一場星杯大戰的紀錄，你將腦中的紀錄記下...</p>
+	  <img src="startwar.png" alt="星杯" class="wall-image2" id="stone"/>
+	  <p>同時...你也想起你就是曾經來到這裡的那條魚，將得到的寶物一起留在船上了...</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script>
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const ctx = overlay.getContext('2d');
+    const menu = document.getElementById('menu');
+    const nav = document.getElementById('nav');
+    let stream, running=false;
+	// 解鎖 puzzle4 的點擊順序
+	const unlockSequence = ["home", "puzzle2", "puzzle1", "home", "puzzle1", "puzzle3"];
+	let unlockIndex = 0;
+
+    function showSection(id){
+      document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if(id==='scanner') start(); else stop();
+	  if(id === 'puzzle2') {
+		enableOrientation();
+	  }
+		   // ===== 檢查 puzzle4 解鎖順序 =====
+	  if (id === unlockSequence[unlockIndex]) {
+		unlockIndex++;
+		if (unlockIndex === unlockSequence.length) {
+		  // 解鎖 puzzle4 按鈕
+		  if(!document.getElementById('btn-puzzle4')){
+			const btn = document.createElement('button');
+			btn.id = 'btn-puzzle4';
+			btn.textContent = '祭壇位置';
+			btn.onclick = ()=>showSection('puzzle4');
+			nav.appendChild(btn);
+			alert("石門忽然開始開起!");
+		  }
+		  unlockIndex = 0; // 重置，避免再觸發
+		}
+	  } else {
+		// 點錯就重置
+		unlockIndex = 0;
+	  }
+    }
+
+    async function start(){
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+        video.srcObject = stream;
+        video.play();
+        running = true;
+        requestAnimationFrame(tick);
+      } catch(e){
+        alert('無法啟動相機: '+e);
+      }
+    }
+
+    function stop(){
+      running = false;
+      if(stream){
+        stream.getTracks().forEach(t=>t.stop());
+        stream = null;
+      }
+    }
+	
+    function tick(){
+      if (!running) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA){
+        overlay.width = video.videoWidth;
+        overlay.height = video.videoHeight;
+        ctx.drawImage(video,0,0,overlay.width,overlay.height);
+        const img = ctx.getImageData(0,0,overlay.width,overlay.height);
+        const code = jsQR(img.data, img.width, img.height, {inversionAttempts:'attemptBoth'});
+        if (code){
+          drawLine(code.location);
+          onDetected(code.data);
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function drawLine(loc){
+      ctx.beginPath();
+      ctx.moveTo(loc.topLeftCorner.x, loc.topLeftCorner.y);
+      ctx.lineTo(loc.topRightCorner.x, loc.topRightCorner.y);
+      ctx.lineTo(loc.bottomRightCorner.x, loc.bottomRightCorner.y);
+      ctx.lineTo(loc.bottomLeftCorner.x, loc.bottomLeftCorner.y);
+      ctx.closePath();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#5eead4';
+      ctx.stroke();
+    }
+
+    function onDetected(text){
+	  const items = Array.from(menu.querySelectorAll('li')).map(li=>li.dataset.val);
+	  // 特定 QR Code 觸發新選單項目
+	  if(text === "https://voiplab.niu.edu.tw/Q1"){
+		if(!document.getElementById('btn-puzzle2')){
+		  const btn = document.createElement('button');
+		  btn.id = 'btn-puzzle2';
+		  btn.textContent = '隱藏的道路';
+		  btn.onclick = ()=>showSection('puzzle2');
+		  nav.appendChild(btn);
+		}
+	  }
+	  if(text === "https://agib.tw"){
+		if(!document.getElementById('btn-puzzle5')){
+		  const btn = document.createElement('button');
+		  btn.id = 'btn-puzzle5';
+		  btn.textContent = '魚之國戰';
+		  btn.onclick = ()=>showSection('puzzle5');
+		  nav.appendChild(btn);
+		  const btnScanner = nav.querySelector("button[onclick*='scanner']");
+		  if (btnScanner) btnScanner.style.display = "none";
+		}
+	  }
+	}
+
+
+    function safeHref(s){
+      try { const u=new URL(s); return u.href; } catch { return 'javascript:void(0)'; }
+    }
+
+    // 隱藏連結解鎖謎題 3
+    let unlockProgress = 0;
+    function unlockStep(step){
+      if(step === unlockProgress + 1){
+        unlockProgress++;
+        if(unlockProgress === 6){
+          if(!document.getElementById('btn-puzzle3')){
+            const btn = document.createElement('button');
+            btn.id = 'btn-puzzle3';
+            btn.textContent = '開啟的石門';
+            btn.onclick = ()=>showSection('puzzle3');
+            nav.appendChild(btn);
+            alert('在一陣轟隆聲後，石門在你面前開起!');
+          }
+        }
+      } else {
+        unlockProgress = 0; // 點錯就重來
+      }
+    }
+	let stoneClickCount = 0; // 記錄點擊次數
+	const stone = document.getElementById('stone');
+
+	// 點擊事件
+	stone.addEventListener('click', () => {
+	  stoneClickCount++;
+	  if (stoneClickCount === 5) {
+		// 創建並顯示新圖片
+		const newImg = document.createElement('img');
+		const newword = document.createElement('div');
+		newImg.src = 'Q3.jpg'; // 你要出現的圖片
+		newImg.alt = '隱藏圖片';
+		newImg.className = 'wall-image';
+		newword.innerHTML='用力彈一彈紙後，從紙張的縫隙中掉出一張照片'
+		stone.parentElement.appendChild(newword);
+		stone.parentElement.appendChild(newImg);
+		
+	  }
+	});
+
+function enableOrientation() {
+  if (typeof DeviceOrientationEvent !== "undefined" && 
+      typeof DeviceOrientationEvent.requestPermission === "function") {
+    // iOS
+    DeviceOrientationEvent.requestPermission()
+      .then((response) => {
+        if (response === "granted") {
+          window.addEventListener("deviceorientation", handleOrientation);
+        } else {
+          alert("未允許使用方向感測器，部分功能可能無法使用。");
+        }
+      })
+      .catch(console.error);
+  } else {
+    // Android
+    window.addEventListener("deviceorientation", handleOrientation);
+  }
+}
+
+function handleOrientation(event) {
+  const beta = event.beta; // 前後傾斜角度 (-180 ~ 180)
+  const stoneImg = document.getElementById("stone");
+  if (!stoneImg) return;
+
+  if (beta > 100 || beta < -100) {
+    // 面朝下
+    stoneImg.src = "stone2.png";
+  } else {
+    // 面朝上
+    stoneImg.src = "stone.png";
+  }
+}
+
+
+  </script>
+</body>
+</html>
+

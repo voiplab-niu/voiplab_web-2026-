@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>漁見未來 | 智慧水產養殖監測與預警系統</title>
+  <meta
+    name="description"
+    content="宜蘭多元水產智慧養殖轉型與在地漁青共創計畫"
+  />
+
+  <style>
+    :root {
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --accent: #0d9488;
+      --accent-dark: #0f766e;
+      --accent-muted: #f0fdfa;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --muted: #64748b;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .container {
+      width: min(1120px, 92%);
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(248, 250, 252, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .hero {
+      padding: 96px 0 88px;
+      background:
+        radial-gradient(circle at top left, #ccfbf1 0, transparent 34%),
+        linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--accent-muted);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      line-height: 1.18;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 680px;
+      margin-bottom: 28px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-weight: 800;
+      border: 1px solid var(--accent);
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .btn-outline {
+      color: var(--accent);
+      background: white;
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-muted);
+    }
+
+    .hero-image-card {
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      background: white;
+    }
+
+    /* --- 圖片輪播外框設定 --- */
+    .slider {
+      position: relative;
+      width: 100%;
+      height: 300 px;
+      background: #f8fafc;
+    }
+
+    /* --- 每張圖片的預設狀態 --- */
+    .slider img.slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0; /* 預設先全部透明隱藏 */
+      animation: fadeSlide 12s infinite; /* 總時間12秒，無限循環 */
+    }
+
+    /* --- 設定每張圖片的出場順序 (12秒 ÷ 3張 = 每4秒接力) --- */
+    .slider img.slide-1 { animation-delay: 0s; }
+    .slider img.slide-2 { animation-delay: 4s; }
+    .slider img.slide-3 { animation-delay: 8s; }
+
+    /* --- 淡入淡出的動畫劇本 --- */
+    @keyframes fadeSlide {
+      0%   { opacity: 0; }
+      8%   { opacity: 1; }  /* 快速淡入顯示 */
+      25%  { opacity: 1; }  /* 穩穩地顯示給使用者看 */
+      33%  { opacity: 0; }  /* 慢慢淡出 */
+      100% { opacity: 0; }  /* 剩下的時間保持隱藏，等下一輪 */
+    }
+
+    .hero-image-caption {
+      padding: 18px 22px;
+    }
+
+    .hero-image-caption h3 {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .hero-image-caption p {
+      font-size: 14px;
+      margin: 0;
+      color: var(--muted);
+    }
+.nav-inner .logo {
+	  display: flex !important;       
+	  flex-direction: row !important; 
+	  align-items: center;            
+	  gap: 10px;                      /* 圖片與文字的間距 */
+	  white-space: nowrap;            /* 強制文字不換行 */
+	  
+	  /* --- 你的原版視覺設定 --- */
+	  font-size: 22px;
+	  font-weight: 900;
+	  color: var(--accent);
+	  letter-spacing: 1px;
+	  text-decoration: none;
+	}
+    }
+    section {
+      padding: 112px 0;
+    }
+
+    .section-white {
+      background: #ffffff;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-title span {
+      color: var(--accent);
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    .section-title h2 {
+      font-size: 36px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      max-width: 760px;
+      margin: 0 auto;
+      font-size: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--accent-muted);
+      color: var(--accent);
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      font-size: 21px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .problem-pairs {
+      display: grid;
+      gap: 22px;
+    }
+
+    .problem-row {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+
+    .problem-row .card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .problem-photo {
+      height: 100%;
+      min-height: 260px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      background: white;
+    }
+
+    .problem-photo img {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .photo-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+      transition: 0.2s;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .photo-card-content {
+      padding: 18px 20px 20px;
+    }
+
+    .photo-card h3 {
+      font-size: 19px;
+      margin-bottom: 6px;
+    }
+
+    .photo-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 34px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      text-align: center;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .stat-card strong {
+      display: block;
+      color: var(--accent);
+      font-size: 30px;
+      margin-bottom: 4px;
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      padding: 36px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      background: white;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .problem-row,
+      .grid-3,
+      .grid-2,
+	.grid-4, 
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 72px 0 64px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .slider {
+        height: 300px;
+      }
+
+      .problem-photo,
+      .problem-photo img {
+        min-height: 0;
+        height: 220px;
+      }
+
+      .problem-row .card {
+        height: auto;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      section {
+        padding: 80px 0;
+      }
+
+      .section-title h2 {
+        font-size: 30px;
+      }
+      
+	
+  </style>
+</head>
+
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+
+
+      <a href="#" class="logo"><img src="./images/LOGO.png" alt="logo" width="50">漁見未來</a>
+            <nav class="nav-links">
+        <a href="#problem">問題分析</a>
+        <a href="#solution">解決方案</a>
+        <a href="#impact">影響力</a>
+        <a href="#field">場域照片</a>
+        <a href="#partners">合作夥伴</a>
+        <a href="#awards">獲獎與參展 </a>
+        
+        
+        
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="tag">宜蘭大學VoIP Lab</div>
+          <h1>智慧水產養殖監測與預警系統</h1>
+          <p>
+            結合 AI 影像辨識、IoT 水質監測與即時通知機制，
+            協助宜蘭多元水產養殖場域降低管理負擔，
+            推動在地漁青智慧化轉型。
+          </p>
+
+          <div class="btn-group">
+            <a href="#solution" class="btn btn-primary">查看解決方案</a>
+            <a href="#field" class="btn btn-outline">查看場域照片</a>
+          </div>
+        </div>
+
+        <div class="hero-image-card">
+          <!-- 圖片輪播區塊 -->
+          <div class="slider">
+            <img src="./images/titlepic1.png" alt="無人魚池" class="slide slide-1">
+            <img src="./images/titlepic2.png" alt="感測設備" class="slide slide-2">
+            <img src="./images/titlepic3.png" alt="場域討論" class="slide slide-3">
+          </div>
+          
+          <div class="hero-image-caption">
+            <h3>在地場域 × 智慧養殖</h3>
+            <p>以實際養殖場域為核心，導入 AIoT 監測與預警服務。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="problem">
+      <div class="container">
+        <div class="section-title">
+          <span>Problem</span>
+          <h2>養殖現場面臨的挑戰</h2>
+          <p>
+            傳統養殖多仰賴資深漁民經驗判斷，缺乏完整數據紀錄與標準化管理流程，
+            對青年接班、日常管理與產業轉型形成挑戰。
+          </p>
+        </div>
+
+        <div class="problem-pairs">
+          <div class="problem-row">
+            <div class="problem-photo">
+              <img src="./images/test1.png" alt="水質波動難即時掌握">
+            </div>
+
+            <div class="card">
+              <div class="card-icon">📉</div>
+              <h3>水質波動難即時掌握</h3>
+              <p>
+                水溫、溶氧、pH、鹽度與 ORP 等水質數據會直接影響魚蝦攝食、成長與存活，但人工巡檢頻率有限，無法持續掌握水質變化。當水質異常未能及早預警會等到魚蝦出現問題時才被發現。
+              </p>
+            </div>
+          </div>
+
+          <div class="problem-row">
+            <div class="problem-photo">
+              <img src="./images/test2.png" alt="魚蝦對環境敏感死亡風險高">
+            </div>
+
+            <div class="card">
+              <div class="card-icon">🧠</div>
+              <h3>魚蝦對環境敏感死亡風險高</h3>
+              <p>
+                宜蘭清澈穩定的水源是養殖優勢，但魚蝦仍對水溫、溶氧、pH、鹽度與 ORP 等變化高度敏感。若水質異常未能即時發現，容易造成攝食下降、活動力降低，甚至提高疾病與死亡風險。
+              </p>
+            </div>
+          </div>
+
+          <div class="problem-row">
+            <div class="problem-photo">
+              <img src="./images/test3.png" alt="資深經驗傳承困難">
+            </div>
+
+            <div class="card">
+              <div class="card-icon">💧</div>
+              <h3>資深經驗傳承困難</h3>
+              <p>
+                宜蘭多元水產養殖仍高度仰賴資深養殖者的現場經驗，包含魚蝦活動力、攝食狀況與水色變化等判斷。然而這些經驗屬於長期累積的知識，返鄉青年難以快速掌握容易造成管理判斷落差。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="solution" class="section-white">
+      <div class="container">
+        <div class="section-title">
+          <span>Solution</span>
+          <h2>智慧養殖解決方案</h2>
+          <p>
+            透過 AIoT 系統整合影像辨識、水質監測、事件通知與資料分析，
+            建立可擴充、可導入、可維護的智慧養殖平台。
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon">🐟</div>
+            <h3>AI 影像辨識</h3>
+            <p>
+              針對墨瑞鱈、白蝦與香魚等不同養殖情境，
+              進行異常行為、體長、活動力與狀態辨識。
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-icon">📡</div>
+            <h3>IoT 水質監測</h3>
+            <p>
+              透過感測設備蒐集水質資料，
+              協助養殖戶掌握水溫、pH、溶氧與環境變化。
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-icon">🔔</div>
+            <h3>即時異常通知</h3>
+            <p>
+              當系統偵測到異常狀況時，
+              可透過 LINE、Discord、Teams 等平台通知管理者。
+            </p>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <strong>AI</strong>
+            <span>影像輔助判斷</span>
+          </div>
+
+          <div class="stat-card">
+            <strong>IoT</strong>
+            <span>水質即時監測</span>
+          </div>
+
+          <div class="stat-card">
+            <strong>Notify</strong>
+            <span>異常即時通知</span>
+          </div>
+
+          <div class="stat-card">
+            <strong>Data</strong>
+            <span>資料紀錄分析</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="impact">
+      <div class="container">
+        <div class="section-title">
+          <span>Impact</span>
+          <h2>預期影響與社會價值</h2>
+          <p>
+            讓養殖管理從經驗導向逐步走向數據輔助，
+            協助青年養殖戶更快掌握場域狀況，降低導入智慧養殖的門檻。
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>提升管理效率</h3>
+            <p>減少人工巡視與重複觀察，讓養殖戶能更快掌握異常狀況。</p>
+          </div>
+
+          <div class="card">
+            <h3>降低養殖風險</h3>
+            <p>透過即時監測與預警，及早發現水質、設備與行為異常。</p>
+          </div>
+
+          <div class="card">
+            <h3>促進青年接班</h3>
+            <p>將經驗轉化為數據依據，降低青年學習與接班門檻。</p>
+          </div>
+
+          <div class="card">
+            <h3>支援多魚種擴展</h3>
+            <p>透過模型抽換與 AI 資源共享池，提升系統應用彈性。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="field" class="section-white">
+      <div class="container">
+        <div class="section-title">
+          <span>Field Gallery</span>
+          <h2>場域照片與系統應用</h2>
+          <p>
+            以下展示實際養殖場域、感測設備、場域交流與參訪紀錄，
+            作為智慧養殖系統落地驗證的重要依據。
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <div class="photo-card">
+            <img src="./images/kelin-discussion.jpg" alt="柯林漁場討論照片">
+            <div class="photo-card-content">
+              <h3>場域需求討論</h3>
+              <p>與養殖場域夥伴討論實際需求與系統導入方向。</p>
+            </div>
+          </div>
+
+          <div class="photo-card">
+            <img src="./images/kelin-group.jpg" alt="柯林漁場合影">
+            <div class="photo-card-content">
+              <h3>柯林漁場合作</h3>
+              <p>透過場域合作累積實際資料與系統驗證經驗。</p>
+            </div>
+          </div>
+
+          <div class="photo-card">
+            <img src="./images/pond-empty.jpg" alt="無人魚池照片">
+            <div class="photo-card-content">
+              <h3>養殖池場域</h3>
+              <p>實際養殖池環境可作為水質與影像監測部署場域。</p>
+            </div>
+          </div>
+
+          <div class="photo-card">
+            <img src="./images/sensor-device.jpg" alt="魚池感測設備">
+            <div class="photo-card-content">
+              <h3>水質感測設備</h3>
+              <p>透過感測器持續蒐集水質資料，協助掌握環境變化。</p>
+            </div>
+          </div>
+
+          <div class="photo-card">
+            <img src="./images/sensor-solar.jpg" alt="感測器和太陽能板">
+            <div class="photo-card-content">
+              <h3>感測器與太陽能板</h3>
+              <p>結合戶外供電與監測設備，提高場域部署彈性。</p>
+            </div>
+          </div>
+
+          <div class="photo-card">
+            <img src="./images/shrimp-net.jpg" alt="蝦網照片">
+            <div class="photo-card-content">
+              <h3>白蝦養殖應用</h3>
+              <p>可延伸至白蝦體長、數量與活動力等影像辨識情境。</p>
+            </div>
+          </div>
+
+          <div class="photo-card">
+            <img src="./images/visit-1.jpg" alt="農業參訪團參訪中">
+            <div class="photo-card-content">
+              <h3>農業參訪交流</h3>
+              <p>透過參訪與交流，擴展智慧養殖系統的應用視野。</p>
+            </div>
+          </div>
+
+          <div class="photo-card">
+            <img src="./images/visit-2.jpg" alt="農業參訪團聽演講">
+            <div class="photo-card-content">
+              <h3>技術分享與說明</h3>
+              <p>向參訪人員說明智慧養殖系統概念與場域應用成果。</p>
+            </div>
+          </div>
+
+          <div class="photo-card">
+            <img src="./images/visit-group.jpg" alt="農業參訪團合影">
+            <div class="photo-card-content">
+              <h3>參訪團合影</h3>
+              <p>結合跨域交流與在地場域，推動智慧農漁業應用。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="partners">
+      <div class="container">
+        <div class="section-title">
+          <span>Partners</span>
+          <h2>合作夥伴</h2>
+          <p>
+            透過在地漁民、青年養殖戶與系統開發團隊共同合作，
+            推動智慧養殖技術落地。
+          </p>
+        </div>
+
+        <div class="grid-4">
+          <div class="card">
+            <h3>宜蘭漁業青年聯誼會</h3>
+            <p>協助串連在地養殖戶與實際應用需求，推動青年接班與場域導入。</p>
+          </div>
+			<div class="card">
+            <h3>柯林漁場 </h3>
+            <p>協供實際場域資料、設備部署環境與系統驗證回饋。</p>
+          </div>
+          <div class="card">
+            <h3>恆瑞國際股份有限公司</h3>
+            <p>確保研發之系統能穩定維運，讓技術落地且永續</p>
+          </div>
+
+          <div class="card">
+            <h3>宜蘭大學VoIP實驗室</h3>
+            <p>負責 AIoT 平台、影像模型、水質監測與資料分析功能建置。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="awards" class="section-white">
+      <div class="container">
+        <div class="section-title">
+          <span>Awards & Exhibitions</span>
+          <h2>獲獎與受邀參展</h2>
+          <p>
+            團隊技術與創新應用屢獲多項指標性競賽肯定，
+            並積極參與國內外農業科技展覽與國際交流，推動智慧養殖技術擴散。
+          </p>
+        </div>
+
+        <div class="grid-4">
+          <!-- 項目 1 -->
+          <div class="photo-card">
+            <img src="./images/placeholder0.jpg" alt="中華電信智慧創新應用大賽 亞軍">
+            <div class="photo-card-content">
+              <h3>中華電信智慧創新應用大賽 亞軍</h3>
+            </div>
+          </div>
+
+          <!-- 項目 2 -->
+          <div class="photo-card">
+            <img src="./images/placeholder1.jpg" alt="2025行動通訊競賽 第一名">
+            <div class="photo-card-content">
+              <h3>2025行動通訊競賽 第一名</h3>
+            </div>
+          </div>
+
+          <!-- 項目 3 -->
+          <div class="photo-card">
+            <img src="./images/placeholder2.jpg" alt="宜！蘭新創力競賽 第二名">
+            <div class="photo-card-content">
+              <h3>宜！蘭新創力競賽 第二名</h3>
+            </div>
+          </div>
+
+          <!-- 項目 4 -->
+          <div class="photo-card">
+            <img src="./images/placeholder3.jpg" alt="第30屆大專校院資訊應用服務創新競賽 佳作">
+            <div class="photo-card-content">
+              <h3 style="font-size: 17px;">第30屆大專校院資訊應用服務創新競賽 佳作</h3>
+            </div>
+          </div>
+	<div class="photo-card">
+            <img src="./images/placeholder8.jpg" alt="跨域晶片設計應用創新專題實作競賽 佳作">
+            <div class="photo-card-content">
+              <h3 style="font-size: 17px;">跨域晶片設計應用創新專題實作競賽 佳作</h3>
+            </div>
+          </div>
+          <!-- 項目 5 -->
+          <div class="photo-card">
+            <img src="./images/placeholder4.jpg" alt="國科會創新創業激勵計畫 宏圖營">
+            <div class="photo-card-content">
+              <h3>國科會創新創業激勵計畫 宏圖營</h3>
+            </div>
+          </div>
+
+          <!-- 項目 6 -->
+          <div class="photo-card">
+            <img src="./images/placeholder5.jpg" alt="智慧農漁週受邀參展">
+            <div class="photo-card-content">
+              <h3>智慧農漁週受邀參展</h3>
+            </div>
+          </div>
+
+          <!-- 項目 7 -->
+          <div class="photo-card">
+            <img src="./images/placeholder6.jpg" alt="外國農業部參訪">
+            <div class="photo-card-content">
+              <h3>外國農業部參訪</h3>
+            </div>
+          </div>
+
+          <!-- 項目 8 -->
+          <div class="photo-card">
+            <img src="./images/placeholder7.jpg" alt="多國姐妹校交流">
+            <div class="photo-card-content">
+              <h3>多國姐妹校交流</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      © 2026 漁見未來｜智慧水產養殖監測與預警系統
+    </div>
+  </footer>
+</body>
+</html>

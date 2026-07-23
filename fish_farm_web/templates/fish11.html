@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>檢測資料長方圖</title>
+    <script type="text/javascript" src="{{ url_for('static', filename='/js/jquery-1.8.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/js/csmapi.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/demo_frame.js') }}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Bootstrap JS (包含Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='../static/css/chat2.css') }}">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            background-color: #e0f7fa;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #010101;
+            font-size: 50px;
+        }  
+        h2 {
+            text-align: center;
+            font-size: 30px;
+            color: #333;
+        } 
+        #future-prediction {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background: #ffffff;  /* 單一白色背景 */
+            border-radius: 12px;  /* 圓角 */
+            border: none;  /* 去掉其他邊框 */
+            border-left: 8px solid #4CAF50;  /* 左邊綠色邊框 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* 微陰影效果 */
+
+        }
+        .save-card {
+            background: #c9c9c9;  /* 單一白色背景 */
+            border-radius: 12px;  /* 圓角 */
+            border: none;  /* 去掉其他邊框 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* 微陰影效果 */
+
+        }
+        .card-title {
+            font-weight: bold;
+            color: #000 !important; /* 強制設定顏色為黑色 */
+        }
+
+        /* 自定義卡片容器樣式 */
+        #container-xl {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card .text-muted {
+            font-size: 2em;
+            font-weight: bold;
+            color: #000000;
+        }   
+
+        #closeButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        /* 日期選擇基本樣式 */
+        #dateContainer {
+            display: flex; /* 使用 Flexbox 來排列子元素 */
+            justify-content: space-between; /* 讓標籤和日期選擇器左右分佈 */
+            gap: 20px; /* 控制間距 */
+            width: 100%; /* 容器寬度為 100% */
+            flex-wrap: wrap; /* 當螢幕較小時自動換行 */
+        }
+        .date-picker-wrapper {
+            display: flex; /* 使標籤和日期選擇器在同一行 */
+            flex-direction: column; /* 讓標籤在上，日期選擇器在下 */
+            align-items: flex-start; /* 左對齊 */
+            width: 48%; /* 讓每個項目佔據 48% 的寬度 */
+        }
+
+        #dateContainer label {
+            font-size: 18px; /* 調整字體大小 */
+        }
+
+        #dateContainer input[type="date"] {
+            width: 100%; /* 日期選擇器寬度為父容器的 100% */
+            padding: 8px; /* 增加內邊距，使輸入框更大更易點擊 */
+            font-size: 18px; /* 調整字體大小 */
+            border: 1px solid #ccc; /* 添加邊框 */
+            border-radius: 5px; /* 圓角邊框 */
+            box-sizing: border-box; /* 包括內邊距在內的總寬度 */
+        }
+        #menuButton {
+            position: fixed; /* 使用 fixed 以确保按钮始终可见 */
+            top: 20px; 
+            left: 20px; 
+            width: 60px; /* 稍大一点的按钮 */
+            height: 60px;   
+            background-size: contain; /* 保持图标比例 */
+            background-color: transparent; /* 透明背景 */
+            border: none; 
+            border-radius: 10px; /* 圆角效果 */
+            cursor: pointer;
+            z-index: 1000; /* 确保按钮在其他内容上方 */
+            transition: background-color 0.3s, transform 0.3s; /* 平滑过渡效果 */
+        }
+        #menuButton:hover {
+            transform: scale(1.1); /* 鼠标悬停时按钮放大 */
+        }
+        #menuButton img {
+            width: 60px; /* 你可以根據需要調整圖像的大小 */
+            height: auto;
+            margin: 0; /* 去除可能的邊距 */
+        }
+        
+        #sideMenu {
+            position: fixed;/* 固定定位，讓菜單保持在窗口中 */
+            top: 0; /* 菜單距離視口上方0像素 */
+            left: -230px; /* 初始隐藏 */
+            width: 220px;
+            height:100%;
+            background-color: #4fc3f7;
+            color: #ffffff00;
+            padding-top: 6%; /*菜單頂部留出80像素的內邊距*/
+            transition: left 0.3s ease, box-shadow 0.3s ease; /* 左側滑動和陰影的過渡效果 */
+            z-index: 999;
+            border-radius: 8px; /* 圓角 */
+            box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2); /* 為菜單添加陰影效果*/
+        }
+
+        #sideMenu a {
+            padding: 15px 10px;
+            display: block;
+            color: white;
+            width: auto;
+            text-decoration: none;
+            font-size: 25px ; 
+            transition: background-color 0.3s, padding-left 0.3s; 
+            
+        }
+        #sideMenu a:hover {
+            background-color: #1f6d8e; /* 更深的背景色 */
+            border-left: 4px solid #ffffff; /* 左侧边框效果 */
+            padding-left: 20px; /* 鼠标悬停时的内边距 */
+        }
+
+        .dropdown {
+            position: relative; /* 設置相對定位，以便下拉內容能夠相對於這個元素定位 */
+            cursor: pointer; /* 鼠標懸停時顯示為手型光標 */
+        }
+        .dropdown-content {
+            display: none; /* 初始隱藏 */
+            position: absolute; /* 絕對定位 */
+            left: 100%; /* 顯示在父項的左側 */
+            top: 0; /* 在父項下方顯示 */
+            width: 220px; /* 調整寬度 */
+            background-color: #37d0db; /* 背景顏色 */
+            color: #ffffff; /* 文字顏色 */
+            border-radius: 8px; /* 圓角效果 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 陰影效果 */
+            z-index: 1000; /* 確保在其他內容之上 */
+            transition: opacity 0.3s ease, visibility 0.3s ease; /* 平滑過渡效果 */
+            opacity: 0; /* 初始透明度 */
+            visibility: hidden; /* 初始隱藏 */
+        }
+        .dropdown:hover .dropdown-content {
+            display: block; /* 顯示下拉內容 */
+            opacity: 1; /* 變為可見 */
+            visibility: visible; /* 使元素可見 */
+        }
+        .dropdown-content a {
+            padding: 15px 25px; /* 內邊距 */
+            display: block; /* 塊級元素 */
+            color: white; /* 文字顏色 */
+            text-decoration: none; /* 去掉下劃線 */
+            font-size: 14px; /* 字體大小 */
+            transition: background-color 0.3s ease; /* 平滑過渡效果 */
+        }
+        .dropdown-content a:hover {
+            background-color: #1f6d8e; /* 鼠標懸停時的背景顏色 */
+            border-left: 4px solid #ffffff; /* 左側邊框效果 */
+            padding-left: 30px; /* 鼠標懸停時的內邊距 */
+        }
+        .menu-item {
+            display: flex;
+            align-items: center; /* 確保圖片和文本垂直居中對齊 */
+            padding-left: 10px; /* 根據需要調整間距 */  
+            text-align: left ; /* 讓文字靠左對齊 */  
+        }
+        .menu-icon {
+            border: none; /* 移除圖片的邊框 */
+            width: 24px; /* 設置圖片寬度 */
+            height: 25px; /* 設置圖片高度 */
+            margin-right: 10px; /* 調整圖片和文本之間的間距 */
+            position: absolute; /* 絕對定位 */
+            right: 10px;
+            
+        }
+
+        .menu-text {
+            flex-grow: 1; /* 讓文字區域占據剩餘空間並推動圖片到右邊 */
+        }
+        
+        #SQR {
+            background-color: #4fc3f7; /* 淺藍色按鈕 */
+            color: #ffffff; /* 按鈕文字顏色 */
+            border: none;
+            padding: 10px 5px;
+            margin: 5px;
+            width: 95%; /* 寬度 100% */
+            height: 100%; /* 高度 100% */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 25px ; 
+            text-align: left; /* 文字靠左 */
+
+        }
+        #SQR:hover {
+        background-color: #0288d1; /* 滑鼠懸停時變深的藍色 */
+        }
+
+        #SLQR {
+            background-color: #4fc3f7; /* 淺藍色按鈕 */
+            color: #ffffff; /* 按鈕文字顏色 */
+            border: none;
+            margin: 5px;
+            width: 95%; /* 寬度 100% */
+            height: 100%; /* 高度 100% */
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 25px ; 
+            text-align: left; /* 文字靠左 */
+        }
+        #SLQR:hover {
+        background-color: #0288d1; /* 滑鼠懸停時變深的藍色 */
+        }
+
+        /* 表格樣式 */
+        #alertTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-family: Arial, sans-serif;
+        }
+
+        #alertTable th {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #alertTable td {
+            background-color: #ffffff;
+            color: #555;
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* 每一行的背景色交替 */
+        #alertTable tbody tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+
+        #alertTable tbody tr:hover {
+            background-color: #d1f7d1; /* Hover 狀態的背景色 */
+        }
+
+        /* 反應欄位的按鈕樣式 */
+        #alertTable .response-button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #alertTable .response-button:hover {
+            background-color: #45a049;
+        }
+
+        #alertTable .response-button:active {
+            background-color: #388e3c;
+        }
+
+
+
+/* 容器樣式保持一致 */
+.bg-white {
+    background-color: #ffffff !important;
+}
+
+.shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.rounded {
+    border-radius: 8px !important;
+}
+.video-container {
+    max-width: 100%; /* 讓影片佔滿容器寬度 */
+}
+
+.large-video {
+    width: 100%; /* 設置影片寬度為容器的全部 */
+    height: auto; /* 確保影片比例不變 */
+}
+.card-body {
+    padding: 0.5rem !important; /* 覆蓋 Bootstrap 的內邊距 */
+}
+/* 預設隱藏提示文字 */
+
+
+
+
+        /* 手機屏幕尺寸下的樣式調整 */
+        @media (max-width: 768px) {
+            #alertTable th, #alertTable td {
+                padding: 10px;
+            }
+
+            .alert-section {
+                padding: 15px;
+            }
+            #dateContainer {
+                flex-direction: column; /* 當螢幕寬度小於 768px 時，將容器改為縱向排列 */
+                align-items: center; /* 讓元素居中 */
+                display: none;
+            }
+            .date-picker-wrapper {
+                width: 100%; /* 讓每個日期選擇器佔滿整個寬度 */
+                display: none;
+            }
+            #dateContainer label {
+                font-size: 25px; /* 減小字體大小 */
+                padding-left: 10px;
+                padding-right:10px ;
+                display: none;
+            }
+
+            #dateContainer input[type="date"] {
+                font-size: 25px; /* 同樣調整輸入框字體大小 */
+                padding-left: 10px;
+                padding-right:10px ;
+                display: none;
+            }
+            #bottomChart {
+                display: none;
+            }
+            
+            #menuButton {
+                position: fixed; /* 使用 fixed 以确保按钮始终可见 */
+                width: 60px; /* 稍大一点的按钮 */
+                height: 60px;   
+                background-size: contain; /* 保持图标比例 */
+                background-color: transparent; /* 透明背景 */
+                border: none; 
+                border-radius: 10px; /* 圆角效果 */
+                cursor: pointer;
+                z-index: 1000; /* 确保按钮在其他内容上方 */
+                transition: background-color 0.3s, transform 0.3s; /* 平滑过渡效果 */
+            }
+            #sideMenu {
+                position: fixed;/* 固定定位，讓菜單保持在窗口中 */
+                padding-top: 6%; /*菜單頂部留出80像素的內邊距*/
+                left: -230px; /* 初始隐藏 */
+                width: 200px;
+                height:100%;
+                background-color: #4fc3f7;
+                color: #ffffff00;
+                padding-top: 20%; /*菜單頂部留出80像素的內邊距*/
+                transition: left 0.3s ease, box-shadow 0.3s ease; /* 左側滑動和陰影的過渡效果 */
+                z-index: 999;
+                border-radius: 8px; /* 圓角 */
+                box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2); /* 為菜單添加陰影效果*/
+            }
+            #sideMenu a {
+                padding: 15px 10px;
+                display: block;
+                color: white;
+                width: auto;
+                text-decoration: none;
+                font-size: 25px ;
+                transition: background-color 0.3s, padding-left 0.3s; 
+                
+            }
+            .dropdown-content {
+            display: none; /* 初始隱藏 */
+            position: absolute; /* 絕對定位 */
+            left: 100%; /* 顯示在父項的左側 */
+            top: 0; /* 在父項下方顯示 */
+            width: 80%; /* 調整寬度 */
+            background-color: #37d0db; /* 背景顏色 */
+            color: #ffffff; /* 文字顏色 */
+            border-radius: 8px; /* 圓角效果 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 陰影效果 */
+            z-index: 1000; /* 確保在其他內容之上 */
+            transition: opacity 0.3s ease, visibility 0.3s ease; /* 平滑過渡效果 */
+            opacity: 0; /* 初始透明度 */
+            visibility: hidden; /* 初始隱藏 */
+        }
+
+
+        }
+        .nav-item {
+            margin-right: 15px;
+        }
+
+        .alert-card {
+            border-color: red; /* 修改邊框顏色為紅色 */
+        }
+        .nav-tabs .nav-link {
+            background-color: white; /* 預設未按下的背景色 */
+            color: black; /* 預設未按下的文字顏色 */
+            border: 1px solid #dee2e6; /* 預設邊框顏色 */
+            font-size: 1.5rem; /* 增加字體大小 */
+            text-align: center;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background-color: #f8f9fa; /* 滑鼠懸停背景色 */
+            color: black; /* 滑鼠懸停文字顏色 */
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #0a7ae9; /* 按下的背景色（灰色） */
+            color: rgb(239, 239, 239); /* 按下的文字顏色 */
+            border: 1px solid #dee2e6; /* 按下的邊框顏色 */
+        }
+        #imageButton {
+            display: none; /* 小螢幕時隱藏按鈕 */
+        }
+
+        #imageButtonHint {
+            display: block; /* 小螢幕時顯示提示文字 */
+        }
+  
+
+
+        
+    </style>
+</head>
+<body>
+    <div class="chat-float" id="chatFloat">💬</div>
+    <!-- 聊天模態框 -->
+    <div class="chat-modal" id="chatModal">
+        <div class="chat-header">
+            AI 客服
+            <button id="clearChat" class="chat-clear" style="background-color: #ff4d4f; color: white;">清除</button>
+            <button id="closeChat">✖</button>
+        </div>
+        <div class="chat-box" id="chatBox"></div>
+        <div class="input-box">
+            <input type="text" id="userInput" placeholder="請輸入您的問題..." />
+            <button id="sendBtn">送出</button>
+        </div>
+    </div>
+    <button id="menuButton" onclick="toggleMenu()">
+        <img src="{{ url_for('static', filename='images/list.png') }}" alt="Menu Icon">
+    </button>
+    <div id="sideMenu">
+        <button id="menuButton" onclick="toggleMenu()"></button>
+        <a href="/fish_farm/" class="menu-item" id="homeLink">
+            回到主頁 <img src="{{ url_for('static', filename='images/home.png') }}" alt="Home" class="menu-icon">
+        </a>
+        <div class="dropdown">    
+            <a href="#" class="menu-item">
+                <span class="menu-text">監控系統</span>
+                <img src="{{ url_for('static', filename='images/view.png') }}" alt="" class="menu-icon">
+            </a>
+            <div class="dropdown-content">
+                <a href="fish1.html">魚池一</a>
+                <a href="fish2.html">魚池二</a>
+                <a href="fish3.html">魚池三</a>
+            </div>
+        </div>
+        <a href="#" class="menu-item">
+            使用者介面 <img src="{{ url_for('static', filename='images/user.png') }}" alt="" class="menu-icon">
+         </a>
+        <div class="dropdown">
+            <a href="#" class="menu-item">
+                異常值設定<img src="{{ url_for('static', filename='images/warning.png') }}" alt="" class="menu-icon">
+            </a>
+            <div class="dropdown-content">
+                <a href="alertSettings.html">文字輸入</a>
+                <a href="line.html">拉桿輸入</a>
+            </div>
+        </div>
+        <div id="buttonContainer">
+            <button id ="SQR"onclick="startQRScanner()">掃描 QR Code</button>
+        </div>
+    </div>
+    
+    <div class="container-fluid">
+        <div class="main-content-fluid" id="mainContent">
+            <div class="page">
+                <div class="page-header text-center" id="title">
+                    <h1>魚池一</h1>
+                </div>
+                <div class="d-flex justify-content-center ">
+                    <nav>
+                        <ul class="nav nav-tabs " id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="realtime-data-tab" data-bs-toggle="tab" data-bs-target="#realtime-data" type="button" role="tab" aria-controls="realtime-data" aria-selected="true">即時數據</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="alert-events-tab" data-bs-toggle="tab" data-bs-target="#alert-events" type="button" role="tab" aria-controls="alert-events" aria-selected="false">異常事件</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="future-prediction-tab" data-bs-toggle="tab" data-bs-target="#future-prediction" type="button" role="tab" aria-controls="future-prediction" aria-selected="false">未來預測</button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="realtime-data" role="tabpanel" aria-labelledby="realtime-data-tab">
+                        <div class="container-xl-fluid mb-5 bg-light" id="container-xl">
+                            <div class="row mb-3">
+                                <div class="col-12 text-center">
+                                    <h2 class="m-0">即時數據</h2>
+                                </div>
+                            </div>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-12 d-flex justify-content-between align-items-center">
+                                    <div id="lastUpdatedTime" class="text-muted">
+                                        最後更新: <span id="updateTime">2024/12/30 03:42:21</span>
+                                    </div>
+                                    <button type="button" class="btn btn-primary history-btn d-none d-md-inline-block" 
+                                        data-bs-toggle="modal" data-bs-target="#datePickerModal">
+                                        歷史資料
+                                    </button>
+                                    <!-- 問號圖示 -->
+                                    <span class="d-block d-md-none" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                    title="螢幕太小，數據內容無法顯示，請使用較大螢幕查看完整資訊！">
+                                    ❓
+                                    </span>                                     
+                                </div>
+                            </div>
+                            <div class="row row-cards">
+                                <!-- 使用 col 讓五個卡片平均分配寬度 -->
+                                <div class="col-md col-sm-6 mb-4">
+                                    <div id="temperatureCard" class="card shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <h3 class="card-title">溫度</h3>
+                                            <p id="temperature" style="font-size: 30px;">
+                                                <span id="temperatureValue">20.7</span><span class="unit"> °C</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-md col-sm-6 mb-4">
+                                    <div id="pHCard" class="card shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <h3 class="card-title">酸鹼值</h3>
+                                            <p id="pH" style="font-size: 30px;">
+                                                <span id="pHValue">7.4</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-md col-sm-6 mb-4">
+                                    <div id="DOCard" class="card shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <h3 class="card-title">溶氧量</h3>
+                                            <p id="DO" style="font-size: 30px;">
+                                                <span id="DOValue">7.7</span><span class="unit"> mg/L</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-md col-sm-6 mb-4">
+                                    <div id="ORPCard" class="card shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <h3 class="card-title">氧化還原電位</h3>
+                                            <p id="ORP" style="font-size: 30px;">
+                                                <span id="ORPValue">234</span><span class="unit"> mV</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-md col-sm-6 mb-4">
+                                    <div id="saltCard" class="card shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <h3 class="card-title">鹽度</h3>
+                                            <p id="salt" style="font-size: 30px;">
+                                                <span id="saltValue">230</span><span class="unit"> psu</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="alert-events" role="tabpanel" aria-labelledby="alert-events-tab">
+                        <div class="alert-section container-fluid p-4 bg-light shadow rounded">
+                            <div class="row mb-3">
+                                <div class="col-12 text-center">
+                                    <h2 class="m-0">異常事件</h2>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="alertTable" class="table table-bordered table-hover table-striped">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>警報 ID</th>
+                                            <th>種類</th>
+                                            <th>內容</th>
+                                            <th>時間</th>
+                                            <th>狀態</th>
+                                            <th>異常影像</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="alertBody">
+                                        <!-- 新增一筆異常事件 -->
+                                        
+                                    </tbody>
+                                    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered"> <!-- 大小 -->
+                                            <div class="modal-content">
+                                                <div class="modal-header d-flex align-items-center justify-content-between" style="padding: 0.6rem 0.8rem;">
+                                                    <h4 class="modal-title text-center flex-grow-1" id="imageModalLabel"  style="margin: 0 ;">異常影像</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-center">
+                                                    <!-- 可替換為真實影像 -->
+                                                    <video controls width="640">
+                                                        <source src="http://203.145.207.46:8000/exp11/clip_08-24-21_converted.mp4" type="video/mp4">
+                                                        您的瀏覽器不支援 HTML5 影片。
+                                                    </video>
+                                                    
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-primary history-btn"  data-bs-toggle="modal" data-bs-target="#abnormalDataModal">異常資料</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                                                                        
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="future-prediction" role="tabpanel" aria-labelledby="future-prediction-tab">
+                        <!-- 第一排顯示兩個圖表 -->
+                        <div class="row mb-4">
+                            <!-- 溫度圖表 -->
+                            <div class="col-md-6 col-12">
+                                <div id="temperature-chart" class="p-4 bg-light shadow rounded"></div>
+                            </div>
+                    
+                            <!-- pH 圖表 -->
+                            <div class="col-md-6 col-12">
+                                <div id="ph-chart" class="p-4 bg-light shadow rounded"></div>
+                            </div>
+                        </div>
+                    
+                        <!-- 第二排顯示兩個圖表 -->
+                        <div class="row mb-4">
+                            <!-- 溶氧 (DO) 圖表 -->
+                            <div class="col-md-6 col-12">
+                                <div id="do-chart" class="p-4 bg-light shadow rounded"></div>
+                            </div>
+                    
+                            <!-- ORP 圖表 -->
+                            <div class="col-md-6 col-12">
+                                <div id="orp-chart" class="p-4 bg-light shadow rounded"></div>
+                            </div>
+                        </div>
+                    
+                        <!-- 第三排顯示一個圖表 -->
+                        <div class="row">
+                            <!-- 鹽度 (Salinity) 圖表 -->
+                            <div class="col-md-6 col-12">
+                                <div id="salinity-chart" class="p-4 bg-light shadow rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="datePickerModal" tabindex="-1" aria-labelledby="datePickerModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header d-flex align-items-center justify-content-between" style="padding: 0.6rem 0.8rem;">
+                                    <h4 class="modal-title text-center flex-grow-1" id="datePickerModalLabel"style="margin: 0 ;">歷史資料</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="dateContainer" class="mb-2" style="display: flex; align-items: center; width: 100%; gap: 10px;">
+                                        <!-- 開始日期 -->
+                                        <div style="flex: 1; display: flex; align-items: center; gap: 5px;">
+                                            <label for="startDateTime" style="white-space: nowrap;">開始日期 :</label>
+                                            <input type="date" id="startDateTime" onchange="updateChart()" class="date-picker"  style="flex: 1;">
+                                        </div>
+                                        <!-- 結束日期 -->
+                                        <div style="flex: 1; display: flex; align-items: center; gap: 5px;">
+                                            <label for="endDateTime" style="white-space: nowrap;">結束日期 :</label>
+                                            <input type="date" id="endDateTime" onchange="updateChart()" class="date-picker" style="flex: 1;">
+                                        </div>
+                                    </div>
+                                    <div id="chartContainerWrapper" style="display: none; margin-top: 5px;">
+                                        <div id="bottomChart" class="mx-auto"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="abnormalDataModal" tabindex="-1" aria-labelledby="abnormalDataModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header d-flex align-items-center justify-content-between" style="padding: 0.6rem 0.8rem;">
+                                    <button type="button" class="btn btn-secondary" id="backToFirstModal">返回</button>
+                                    <h4 class="modal-title text-center flex-grow-1" id="abnormalDataModalLabel" style="margin: 0 ;">異常資料</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="dateContainer" class="mb-2" style="display: flex; align-items: center; width: 100%; gap: 10px;">
+                                        <!-- 開始日期 -->
+                                        <div style="flex: 1; display: flex; align-items: center; gap: 5px;">
+                                            <label for="abnormalStartDateTime" style="white-space: nowrap;">開始日期 :</label>
+                                            <input type="date" id="abnormalStartDateTime" onchange="upaaadateChart()" class="date-picker" style="flex: 1;">
+                                        </div>
+                                        <!-- 結束日期 -->
+                                        <div style="flex: 1; display: flex; align-items: center; gap: 5px;">
+                                            <label for="abnormalEndDateTime" style="white-space: nowrap;">結束日期 :</label>
+                                            <input type="date" id="abnormalEndDateTime" onchange="upaaadateChart()" class="date-picker" style="flex: 1;">
+                                        </div>
+                                    </div>
+                                    <div id="abnormalChartContainerWrapper" style="display: none; margin-top: 5px;">
+                                        <div id="abnormalChart" class="mx-auto"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div> 
+    </div>    
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script>
+
+
+// 定義閾值
+let alertThresholds = {
+    temp_Min: 0,
+    temp_Max: 0,
+    phMin: 0,
+    phMax: 0,
+    doMin: 0,
+    doMax: 0,
+    rpoMin: 0,
+    rpoMax: 0,
+    saltMin: 0,
+    saltMax: 0
+};
+
+function fetchAlertThresholds() {
+    fetch('/fish_farm/get-alert-thresholds')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            Object.assign(alertThresholds, data);
+        })
+        .catch(error => {
+            console.error('發生錯誤:', error);
+        });
+}
+
+function checkForAlerts(latestData) {
+    let { temperature, pH, DO, ORP, salt, time } = latestData;
+    let alertMessages = [];
+    let hasAlert = false;
+    let alertType = "水質異常"; // 預設為水質異常
+    document.getElementById("updateTime").textContent = `${latestData.time}`;
+    document.getElementById("temperature").textContent = `${latestData.temperature}°C`;
+    document.getElementById("pH").textContent = `${latestData.pH}`;
+    document.getElementById("DO").textContent = `${latestData.DO}mg/L`;
+    document.getElementById("ORP").textContent = `${latestData.ORP}mV`;
+    document.getElementById("salt").textContent = `${latestData.salt}psu`;
+
+    // 🔴 溫度異常
+    if (temperature < alertThresholds.temp_Min || temperature > alertThresholds.temp_Max) {
+        alertMessages.push(`溫度異常: ${temperature}°C`);
+        hasAlert = true;
+        document.getElementById("temperatureCard").classList.add("alert-card");
+    } else {
+        document.getElementById("temperatureCard").classList.remove("alert-card");
+    }
+
+    // 🟢 pH 異常
+    if (pH < alertThresholds.phMin || pH > alertThresholds.phMax) {
+        alertMessages.push(`pH值異常: ${pH}`);
+        hasAlert = true;
+        document.getElementById("pHCard").classList.add("alert-card");
+    } else {
+        document.getElementById("pHCard").classList.remove("alert-card");
+    }
+
+    // 🟠 溶氧量異常
+    if (DO < alertThresholds.doMin || DO > alertThresholds.doMax) {
+        alertMessages.push(`溶氧量異常: ${DO} mg/L`);
+        hasAlert = true;
+        document.getElementById("DOCard").classList.add("alert-card");
+    } else {
+        document.getElementById("DOCard").classList.remove("alert-card");
+    }
+
+    // 🔵 氧化還原電位異常
+    if (ORP < alertThresholds.rpoMin || ORP > alertThresholds.rpoMax) {
+        alertMessages.push(`氧化還原電位異常: ${ORP}mV`);
+        hasAlert = true;
+        document.getElementById("ORPCard").classList.add("alert-card");
+    } else {
+        document.getElementById("ORPCard").classList.remove("alert-card");
+    }
+
+    // 🟡 鹽度異常
+    if (salt < alertThresholds.saltMin || salt > alertThresholds.saltMax) {
+        alertMessages.push(`鹽度異常: ${salt}ppt`);
+        hasAlert = true;
+        document.getElementById("saltCard").classList.add("alert-card");
+    } else {
+        document.getElementById("saltCard").classList.remove("alert-card");
+    }
+
+    // 如果有異常，插入異常事件到網頁
+    if (alertMessages.length > 0) {
+        // 插入異常事件到表格
+        const newAlert = {
+            id: generateUUID(),  // 生成唯一 ID
+            type: alertType,
+            content: alertMessages.join("<br>"), // 用 <br> 讓內容換行
+            time: latestData.time, 
+            status: "未處理",
+            video: "沒有影像"
+        };
+
+   
+    }
+
+    // 🚨 判斷是否發送通知
+    if (hasAlert) {
+        console.log("⚠️ 檢測到異常，開始判斷是否應發送通知...");
+        if (shouldSendNotification()) {
+            let fullAlertMessage = alertMessages.join("\n"); // 合併所有異常資訊
+            sendLineNotify(alertType, fullAlertMessage); // 發送 LINE Notify
+        } else {
+            console.log("通知被抑制，距離上次已確認不到 30 分鐘。");
+        }
+    }
+}
+// 產生唯一 ID
+function generateUUID() {
+    return 'xxxx-4xxx-yxxx'.replace(/[xy]/g, function (c) {
+        let r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+function shouldSendNotification() {
+    if (lastConfirmedTime) {
+        const now = new Date();
+        const diffMinutes = (now - lastConfirmedTime) / (1000 * 60); // 計算與上次「已確認」的時間差
+        console.log(`距離上次確認的時間差: ${diffMinutes.toFixed(2)} 分鐘`);
+        return diffMinutes > 30; // 超過 30 分鐘才允許發送
+    }
+    console.log("未檢測到已確認狀態，允許發送通知。");
+    return true; // 如果沒有記錄確認時間，允許發送
+}
+//發送LINE通知
+function sendLineNotify(alertType, message, videoUrl = null) {
+    // 向後端發送 POST 請求
+    fetch('/fish_farm/send_notify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            'alertType':alertType,
+            'message': message
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const alertId = data.alert_id;  // 從後端回應中獲取 alert_id
+            // 建立警報數據物件
+            const alertData = {
+                id: alertId,
+                type: alertType,
+                content: message,
+                time: new Date().toLocaleString(),
+                status: "未處理",
+                video:videoUrl
+            };
+            // 插入到警報表格中
+            console.log(alertData)
+            addAlertEvent(alertData);
+        } else {
+            console.error('LINE Notify 發送失敗');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+/*sendWebhook(備用)*/
+function sendWebhook(message) {
+    const payload = {
+        text: message // 設置要發送的訊息
+    };
+
+    fetch('/send-webhook', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Webhook 發送成功:', data);
+    })
+    .catch(error => {
+        console.log('Webhook 發送失敗:', error);
+    });
+}
+
+// 記錄上次確認的時間
+let lastConfirmedTime = null;
+function fetchAlertFeedback() {
+    fetch('/fish_fram/get_alert_feedback')
+        .then(response => response.json())
+        .then(data => {
+            console.log('回應資料:', data);  // 顯示從後端獲得的資料
+
+            let hasConfirmedStatus = false;  // 用來標記是否有「已確認」狀態
+
+            for (const alertId in data) {
+                const status = data[alertId].status;
+                console.log(`更新警報 ${alertId} 狀態為: ${status}`);
+
+                // 更新表格或其他顯示
+                updateAlertStatus(alertId, status);
+
+                if (status === "已確認") {
+                    // 記錄當前時間
+                    lastConfirmedTime = new Date();
+                    hasConfirmedStatus = true; // 標記為已確認狀態
+                    console.log(`已確認狀態，記錄時間: ${lastConfirmedTime}`);
+                }
+            }
+
+            if (!hasConfirmedStatus) {
+                // 沒有已確認狀態，則允許發送通知
+                console.log("沒有發現已確認狀態，允許發送通知。");
+                lastConfirmedTime = null; // 清空 lastConfirmedTime
+            }
+
+        })
+        .catch(error => console.error('Error fetching feedback:', error));
+}
+function updateAlertStatus(alertId, status) {
+    const row = document.querySelector(`tr[data-alert-id="${alertId}"]`);
+    if (row) {
+        const statusCell = row.querySelector('td:nth-child(5)');  // 確保選擇的是狀態欄位
+        if (statusCell) {
+            statusCell.textContent = status;  // 更新狀態
+        }
+    } else {
+        console.log('找不到對應的 alert_id:', alertId);
+    }
+}
+setInterval(fetchAlertFeedback, 1000000); // 每 5 秒請求一次
+
+
+
+/*模態框的互相作用*/
+document.addEventListener("DOMContentLoaded", () => {
+    const imageModal = new bootstrap.Modal(document.getElementById("imageModal"));
+    const datePickerModal = new bootstrap.Modal(document.getElementById("datePickerModal"));
+    const abnormalDataModal = new bootstrap.Modal(document.getElementById("abnormalDataModal")) 
+    document.getElementById("backToFirstModal").addEventListener("click", () => {
+        console.log("返回按鈕被點擊");
+        abnormalDataModal.hide(); // 關閉第二個模態框
+        imageModal.show(); // 返回到第一個模態框
+    });
+});
+
+// daiSDK 定義為全域變數
+var daiSDK;
+/*定義透過iottalk發送請求的函數*/
+function pushData() {
+    daiSDK.push("data-I", ["new_data1", 1]); 
+}
+
+function pushsplunk() {
+    daiSDK.push("Forecast-I", ["new_data1","Temperature"]);
+    
+}
+
+function pushhisData(modalId) {
+    let startDate, endDate;
+
+    if (modalId === "datePickerModal") {
+        // 歷史資料
+        startDate = document.getElementById("startDateTime").value;
+        endDate = document.getElementById("endDateTime").value;
+    } else if (modalId === "abnormalDataModal") {
+        // 異常資料
+        startDate = document.getElementById("abnormalStartDateTime").value;
+        endDate = document.getElementById("abnormalEndDateTime").value;
+    }
+    daiSDK.push("History-I", ["new_data1",startDate, endDate]); 
+    console.log(`發送請求：${modalId}, 日期範圍 ${startDate} ~ ${endDate}`);
+}
+
+/*增加異常事件欄位*/
+const alertBody = document.getElementById("alertBody");//物件當作變數
+function addAlertEvent(alert) {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${alert.id}</td>
+        <td>${alert.type}</td>
+        <td style="white-space: pre-line;">${alert.content}</td>  <!-- 這裡加上換行 -->
+        <td>${alert.time}</td>
+        <td>${alert.status}</td>
+        <td>
+            ${alert.video && alert.video !== "沒有影像" ? `
+                <button type="button" class="btn btn-primary btn-sm d-none d-md-block mx-auto view-image" 
+                        data-bs-toggle="modal" data-bs-target="#imageModal" data-video="${alert.video}">
+                    查看影像
+                </button>
+                <span class="d-block d-md-none" data-bs-toggle="tooltip" data-bs-placement="top" 
+                        title="螢幕太小，數據內容無法顯示，請使用較大螢幕查看完整資訊！">
+                    ❓
+                </span>
+            ` : "無"}
+        </td>
+    `;
+    alertBody.prepend(row); // 插入到最上方
+    // 綁定按鈕事件，讓模態框顯示對應影像
+    row.querySelector(".view-image")?.addEventListener("click", function () {
+        const videoSrc = this.getAttribute("data-video");
+        document.querySelector("#imageModal video source").setAttribute("src", videoSrc);
+        document.querySelector("#imageModal video").load(); // 重新載入影片
+    });
+}
+// 測試用插入異常事件
+function receiveAlertData(newAlerts) {
+    newAlerts.forEach(alert => addAlertEvent(alert));
+}
+setTimeout(() => {
+        receiveAlertData([
+            { id: "x1y2z3", type: "行為異常", content: "異常翻身", time: "2024/11/20 8:22", status: "未處理", video: "https://203.145.207.46/video/exp11/clip_08-24-21_converted.mp4" },
+        ]);
+    }, 3000);
+
+window.onload = function() {
+    let bottomChart;
+    daiSDK = dai(); // 初始化 daiSDK
+    /*即時資料*/
+    pushData();
+    /*未來預測*/
+    pushsplunk();
+    /*透過api接收異常閥值*/
+    fetchAlertThresholds();
+
+    /*定期請求資料*/
+    setInterval(pushData,30000);
+    setInterval(fetchAlertThresholds, 30000);
+    setInterval(pushsplunk, 5000);
+};
+let latestData = {
+    temperature: 0,  // 溫度
+    pH: 0,           // pH 值
+    DO: 0,           // 溶氧量
+    ORP: 0,          // ORP 值
+    salt: 0,         // 鹽度
+};
+let fish_flip = {
+    time: "2025/3/7 上午12:45:11",  // arr[0]異常發生的時間
+    URL: "https://203.145.207.46/video/exp11/clip_08-24-21_converted.mp4",   // arr[1]翻身影片的連結
+};
+$(window).on('iotTalkUpdate', function(e) {
+    if(e.df_name=="fish_flip_messages-O"){
+        var arr = e.dataArr;
+        console.log("翻身"+arr);
+        if (arr && arr.length > 0) {
+            fish_flip.time = arr[0][1][2];  // arr[0]異常發生的時間
+            fish_flip.URL= arr[0][1][1]; 
+        };
+       
+        // 生成警報對象   
+        let alert = {
+            id: generateUUID(),
+            type: "行為異常",
+            content: "魚異常翻身",
+            time: fish_flip.time,
+            status: "未處理",
+            video: fish_flip.URL
+        };
+        sendLineNotify(alert.type, alert.content,alert.video); // 發送 LINE 通知
+
+    };
+    // 這個放外面，記錄最新狀態
+
+
+// 全域，放最外層
+
+
+    if (e.df_name == "DO-O" || e.df_name == "ORP-O"|| e.df_name == "PH-O"|| e.df_name == "Temperature-O"|| e.df_name == "Salinity-O") {
+
+        var arr = e.dataArr;
+        if (arr && arr.length > 0) {
+            // 更新時間
+            latestData.time = arr[0][1][4]; 
+
+            // 根據感測器名稱來更新對應的欄位
+            if (arr[0][1][2] === "DO_Sensor1") {
+                latestData.DO = arr[0][1][3];  // 更新 DO
+            } else if (arr[0][1][2] === "ORP_Sensor1") {
+                latestData.ORP = arr[0][1][3]; // 更新 ORP
+            }else if (arr[0][1][2] === "PH_Sensor1") {
+                latestData.pH = arr[0][1][3]; // 更新 ORP
+            }else if (arr[0][1][2] === "Temperature_Sensor1") {
+                latestData.temperature = arr[0][1][3]; // 更新 ORP
+            }else if (arr[0][1][2] === "Salinity_Sensor1") {
+                latestData.salt = arr[0][1][3]; // 更新 ORP
+            }
+
+            // 呼叫異常檢測
+            checkForAlerts(latestData);
+        }
+    }
+
+    if (e.df_name == "Forecast-O") {
+        var arr1 = e.dataArr[0][1][0][0]; // 溫度數據
+        var arr2 = e.dataArr[0][1][0][1]; // pH 數據
+        var arr3 = e.dataArr[0][1][0][2]; // DO 數據
+        var arr4 = e.dataArr[0][1][0][3]; // ORP 數據
+        var arr5 = e.dataArr[0][1][0][4]; // 鹽度數據
+        splunktempChart(arr1);
+        splunkphChart(arr2);
+        splunkdoChart(arr3);
+        splunkorpChart(arr4);
+        splunksalinityChart(arr5);
+    }
+    // 變數存儲上次回應
+    let lastAitalk = ""; 
+    if (e.df_name === "message-O" && e.dataArr?.[0]?.[1]?.[0]) {
+        let aitalk = e.dataArr[0][1][0]; // 取得 AI 生成的文字
+        if (aitalk !== lastAitalk) { // 只在文字不同時執行
+            console.log("aitalk"+aitalk);
+            addMessage(aitalk, "bot");
+            lastAitalk = aitalk; // 更新上次的回應
+            console.log("lastastalk"+lastAitalk);
+        }
+    };
+    if (e.df_name === "history-O") {
+        //確保e.dataArr有數據
+        if (e.dataArr && e.dataArr.length > 0 && e.dataArr[0][1] && e.dataArr[0][1].length > 0) {
+            var arr = e.dataArr[0][1][0]; // 取得歷史數據
+            
+            data = arr;
+            
+            if (data && data.length > 0) {
+                upaaadateChart(); // 更新圖表
+                updateChart();    
+            } else {
+                console.warn("沒有歷史數據，圖表不更新");
+            }
+            } else {
+                console.warn("沒有接收到有效的歷史數據");
+            }
+    }
+});
+
+//頁面太小?說明的js
+document.addEventListener("DOMContentLoaded", function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+
+/*準備好的*/
+function formatTime(timeString) {
+    const date = new Date(timeString); // 將 ISO 字符串轉換為 Date 物件
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份是 0-11，需要加 1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    // 返回格式為：YYYY-MM-DD HH:MM:SS
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+//在未來預測的圖表上可以標記不同天的時間
+function checksplunkday(timestamp, prevTimestamp = null) {
+    const date = new Date(timestamp);
+    const prevDate = prevTimestamp ? new Date(prevTimestamp) : null;
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    if (prevDate && prevDate.toDateString() !== date.toDateString()) {
+        return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${hours}:${minutes}`;
+    }
+    return `${hours}:${minutes}`;
+    console.log("有改")
+}
+//未來預測的圖表
+function splunktempChart(arr) {  
+    let timeLabels = arr.map((item, index) => {
+        const prevTime = index > 0 ? arr[index - 1]._time : null;
+        return checksplunkday(item._time, prevTime);
+    });
+    let predictedValues = arr.map(item => {
+        const value = parseFloat(item["predicted(AVG_Temperature)"]);
+        return isNaN(value) ? null : value;
+    }).filter(value => value !== null);
+    const minValue = Math.min(...predictedValues);
+    const maxValue = Math.max(...predictedValues);
+    const padding = (maxValue - minValue) * 0.2;
+    const adjustedMin = minValue - padding;
+    const adjustedMax = maxValue + padding;
+    const options = {
+        chart: { type: "line", height: 400, background: "transparent" },
+        series: [{ name: "數據", type: "line", data: predictedValues }],
+        title: { text: "溫度", align: 'center', style: { fontSize: '30px', fontWeight: 'bold', color: '#333' } },
+        xaxis: {categories: timeLabels,labels: { rotate: 0, style: { fontSize: '11px' } }},
+        yaxis: {min: adjustedMin,max: adjustedMax,labels: { style: { fontSize: '12px' } }},
+        stroke: { width: 3, curve: "smooth" },  // **保持全部為實線**
+        colors: ["#0000FF"], // **線條顏色**
+        tooltip: { shared: true, intersect: false },
+        markers: {size: 5,colors: ["#0000FF"],strokeWidth: 2,strokeColors: "#ffffff",hover: { size: 7 }},
+        annotations: {
+            xaxis: [{x: timeLabels[timeLabels.length - 4],label: {text: "預測值",style: { color: "#FFF", background: "#FF0000" }}},
+                {x: timeLabels[timeLabels.length - 4],x2: timeLabels[timeLabels.length - 1],fillColor: "#FFD700",opacity: 0.2}]}
+    };
+    if (!window.chart) {
+        window.chart = new ApexCharts(document.querySelector("#temperature-chart"), options);
+        window.chart.render();
+    } else {
+        window.chart.updateOptions({
+            yaxis: { min: adjustedMin, max: adjustedMax }
+        });
+        window.chart.updateSeries([{ data: predictedValues }]);
+    }
+}
+function splunkphChart(arr) {
+    const timeLabels = arr.map((item, index) => {
+        const prevTime = index > 0 ? arr[index - 1]._time : null;
+        return checksplunkday(item._time, prevTime);
+    });
+    const predictedValues = arr.map(item => {
+        const value = parseFloat(item["predicted(AVG_pH)"]);
+        return isNaN(value) ? null : value;
+    }).filter(value => value !== null);
+
+    const minValue = Math.min(...predictedValues);
+    const maxValue = Math.max(...predictedValues);
+    const padding = (maxValue - minValue) * 0.2;
+    const adjustedMin = minValue - padding;
+    const adjustedMax = maxValue + padding;
+
+    const options = {
+        chart: { type: "line", height: 400, background: "transparent" },
+        series: [{ name: "數據", type: "line", data: predictedValues }],
+        title: { text: "酸鹼值", align: 'center', style: { fontSize: '30px', fontWeight: 'bold', color: '#333' } },
+        xaxis: { categories: timeLabels, labels: { rotate: 0, style: { fontSize: '11px' } } },
+        yaxis: { min: adjustedMin, max: adjustedMax, labels: { style: { fontSize: '12px' } } },
+        stroke: { width: 3, curve: "smooth" },
+        colors: ["#0000FF"],
+        tooltip: { shared: true, intersect: false },
+        markers: { size: 5, colors: ["#0000FF"], strokeWidth: 2, strokeColors: "#ffffff", hover: { size: 7 } },
+        annotations: {
+            xaxis: [{x: timeLabels[timeLabels.length - 4],label: {text: "預測值",style: { color: "#FFF", background: "#FF0000" }}},
+                {x: timeLabels[timeLabels.length - 4],x2: timeLabels[timeLabels.length - 1],fillColor: "#FFD700",opacity: 0.2}]}
+    };
+    if (!window.phChart) {
+        window.phChart = new ApexCharts(document.querySelector("#ph-chart"), options);
+        window.phChart.render();
+    } else {
+        window.phChart.updateOptions({ yaxis: { min: adjustedMin, max: adjustedMax } });
+        window.phChart.updateSeries([{ data: predictedValues }]);
+    }
+}
+function splunkdoChart(arr) {
+    const timeLabels = arr.map((item, index) => {
+        const prevTime = index > 0 ? arr[index - 1]._time : null;
+        return checksplunkday(item._time, prevTime);
+    });
+    const predictedValues = arr.map(item => {
+        const value = parseFloat(item["predicted(AVG_DO)"]);
+        return isNaN(value) ? null : value;
+    }).filter(value => value !== null);
+
+    const minValue = Math.min(...predictedValues);
+    const maxValue = Math.max(...predictedValues);
+    const padding = (maxValue - minValue) * 0.2;
+    const adjustedMin = minValue - padding;
+    const adjustedMax = maxValue + padding;
+
+    const options = {
+        chart: { type: "line", height: 400, background: "transparent" },
+        series: [{ name: "數據", type: "line", data: predictedValues }],
+        title: { text: "溶氧量", align: 'center', style: { fontSize: '30px', fontWeight: 'bold', color: '#333' } },
+        xaxis: { categories: timeLabels, labels: { rotate: 0, style: { fontSize: '11px' } } },
+        yaxis: { min: adjustedMin, max: adjustedMax, labels: { style: { fontSize: '12px' } } },
+        stroke: { width: 3, curve: "smooth" },
+        colors: ["#0000FF"],
+        tooltip: { shared: true, intersect: false },
+        markers: { size: 5, colors: ["#0000FF"], strokeWidth: 2, strokeColors: "#ffffff", hover: { size: 7 } },
+        annotations: {
+            xaxis: [{x: timeLabels[timeLabels.length - 4],label: {text: "預測值",style: { color: "#FFF", background: "#FF0000" }}},
+                {x: timeLabels[timeLabels.length - 4],x2: timeLabels[timeLabels.length - 1],fillColor: "#FFD700",opacity: 0.2}]}
+    };
+    if (!window.doChart) {
+        window.doChart = new ApexCharts(document.querySelector("#do-chart"), options);
+        window.doChart.render();
+    } else {
+        window.doChart.updateOptions({ yaxis: { min: adjustedMin, max: adjustedMax } });
+        window.doChart.updateSeries([{ data: predictedValues }]);
+    }
+}
+function splunkorpChart(arr) {
+    const timeLabels = arr.map((item, index) => {
+        const prevTime = index > 0 ? arr[index - 1]._time : null;
+        return checksplunkday(item._time, prevTime);
+    });
+    const predictedValues = arr.map(item => {
+        const value = parseFloat(item["predicted(AVG_ORP)"]);
+        return isNaN(value) ? null : value;
+    }).filter(value => value !== null);
+
+    const minValue = Math.min(...predictedValues);
+    const maxValue = Math.max(...predictedValues);
+    const padding = (maxValue - minValue) * 0.2;
+    const adjustedMin = minValue - padding;
+    const adjustedMax = maxValue + padding;
+
+    const options = {
+        chart: { type: "line", height: 400, background: "transparent" },
+        series: [{ name: "數據", type: "line", data: predictedValues }],
+        title: { text: "氧化還原電位", align: 'center', style: { fontSize: '30px', fontWeight: 'bold', color: '#333' } },
+        xaxis: { categories: timeLabels, labels: { rotate: 0, style: { fontSize: '11px' } } },
+        yaxis: { min: adjustedMin, max: adjustedMax, labels: { style: { fontSize: '12px' } } },
+        stroke: { width: 3, curve: "smooth" },
+        colors: ["#0000FF"],
+        tooltip: { shared: true, intersect: false },
+        markers: { size: 5, colors: ["#0000FF"], strokeWidth: 2, strokeColors: "#ffffff", hover: { size: 7 } },
+        annotations: {
+            xaxis: [{x: timeLabels[timeLabels.length - 4],label: {text: "預測值",style: { color: "#FFF", background: "#FF0000" }}},
+                {x: timeLabels[timeLabels.length - 4],x2: timeLabels[timeLabels.length - 1],fillColor: "#FFD700",opacity: 0.2}]}
+    };
+
+    if (!window.orpChart) {
+        window.orpChart = new ApexCharts(document.querySelector("#orp-chart"), options);
+        window.orpChart.render();
+    } else {
+        window.orpChart.updateOptions({ yaxis: { min: adjustedMin, max: adjustedMax } });
+        window.orpChart.updateSeries([{ data: predictedValues }]);
+    }
+}
+function splunksalinityChart(arr) {
+    const timeLabels = arr.map((item, index) => {
+        const prevTime = index > 0 ? arr[index - 1]._time : null;
+        return checksplunkday(item._time, prevTime);
+    });
+    const predictedValues = arr.map(item => {
+        const value = parseFloat(item["predicted(AVG_Salinity)"]);
+        return isNaN(value) ? null : value;
+    }).filter(value => value !== null);
+
+    const minValue = Math.min(...predictedValues);
+    const maxValue = Math.max(...predictedValues);
+    const padding = (maxValue - minValue) * 0.2;
+    const adjustedMin = minValue - padding;
+    const adjustedMax = maxValue + padding;
+
+    const options = {
+        chart: { type: "line", height: 400, background: "transparent" },
+        series: [{ name: "數據", type: "line", data: predictedValues }],
+        title: { text: "鹽度", align: 'center', style: { fontSize: '30px', fontWeight: 'bold', color: '#333' } },
+        xaxis: { categories: timeLabels, labels: { rotate: 0, style: { fontSize: '11px' } } },
+        yaxis: { min: adjustedMin, max: adjustedMax, labels: { style: { fontSize: '12px' } } },
+        stroke: { width: 3, curve: "smooth" },
+        colors: ["#0000FF"],
+        tooltip: { shared: true, intersect: false },
+        markers: { size: 5, colors: ["#0000FF"], strokeWidth: 2, strokeColors: "#ffffff", hover: { size: 7 } },
+        annotations: {
+            xaxis: [{x: timeLabels[timeLabels.length - 4],label: {text: "預測值",style: { color: "#FFF", background: "#FF0000" }}},
+                {x: timeLabels[timeLabels.length - 4],x2: timeLabels[timeLabels.length - 1],fillColor: "#FFD700",opacity: 0.2}]}
+    };
+
+    if (!window.salinityChart) {
+        window.salinityChart = new ApexCharts(document.querySelector("#salinity-chart"), options);
+        window.salinityChart.render();
+    } else {
+        window.salinityChart.updateOptions({ yaxis: { min: adjustedMin, max: adjustedMax } });
+        window.salinityChart.updateSeries([{ data: predictedValues }]);
+    }
+}
+
+/*更改日期時同時請求資料請求歷史資料*/
+document.getElementById("startDateTime").addEventListener("input", function () {
+    pushhisData("datePickerModal");
+});
+document.getElementById("endDateTime").addEventListener("input", function () {
+    pushhisData("datePickerModal");
+});
+
+//設定歷史查詢時間
+function setTodayDate() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始，所以加 1
+    const dd = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${yyyy}-${mm}-${dd}`;
+    document.getElementById("startDateTime").value = formattedDate;
+    document.getElementById("endDateTime").value = formattedDate;
+}
+//設定異常查詢時間
+function setAbnormalDayDate() {
+    const today = new Date();
+
+    // 設定今天的日期
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始，所以加 1
+    const dd = String(today.getDate()).padStart(2, '0');
+
+    // 設定前三天的日期
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(today.getDate() - 3); // 將日期往前調整 3 天
+    const yyyyAgo = threeDaysAgo.getFullYear();
+    const mmAgo = String(threeDaysAgo.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始，所以加 1
+    const ddAgo = String(threeDaysAgo.getDate()).padStart(2, '0');
+
+    // 組合成 yyyy-mm-dd 格式
+    const formattedToday = `${yyyy}-${mm}-${dd}`;
+    const formattedThreeDaysAgo = `${yyyyAgo}-${mmAgo}-${ddAgo}`;
+
+    // 將日期填入對應的 input
+    document.getElementById("abnormalStartDateTime").value = formattedThreeDaysAgo; // 前三天
+    document.getElementById("abnormalEndDateTime").value = formattedToday;         // 今天
+    console.log("設置異常時間")
+}
+
+// 確保在打開模態框時設置日期並立即查詢資料
+document.getElementById("datePickerModal").addEventListener('shown.bs.modal', function () {
+    setTodayDate(); // 打開模態框時自動填入今天的日期
+    pushhisData("datePickerModal")
+});
+document.getElementById("abnormalDataModal").addEventListener('shown.bs.modal', function () {
+    setAbnormalDayDate(); // 打開模態框時自動填入日期
+    pushhisData("abnormalDataModal");
+
+});
+//請求數據後畫圖(異常)
+function upaaadateChart() {
+    const startDate = document.getElementById("abnormalStartDateTime").value;
+    const endDate = document.getElementById("abnormalEndDateTime").value;
+    console.log("upaaa"+endDate)
+    document.getElementById("abnormalChartContainerWrapper").style.display = "block";
+    const filteredData = data.filter(record => {
+        const recordDate = record[0].split(' ')[0]; 
+        return (!startDate || recordDate >= startDate) && (!endDate || recordDate <= endDate);
+    });
+    const temperatures = filteredData.map(record => [record[0], record[1]]);
+    const pHValues = filteredData.map(record => [record[0], record[2]]);
+    const DOValues = filteredData.map(record => [record[0], record[3]]);
+    const ORPValues = filteredData.map(record => [record[0], record[4]]);
+    const SALTValues = filteredData.map(record => [record[0], record[5]]);
+    renderChart2(temperatures, pHValues, DOValues, ORPValues, SALTValues);
+    console.log("異常事件的近三天圖")
+}
+function renderChart2(temperatures = [], pHValues = [], DOValues = [], ORPValues = [], SALTValues = []) {
+const options = {
+    chart: {
+        type: 'line',  
+        width: '100%',   
+    },
+    series: [
+        { name: '溫度 (°C)', data: temperatures }, // 溫度數據，並在名稱中加上單位
+        { name: '酸鹼值 (pH)', data: pHValues },   // 酸鹼值數據
+        { name: '溶氧量 (mg/L)', data: DOValues },  // 溶氧量數據
+        { name: 'ORP (mV)', data: ORPValues },    // ORP數據
+        { name: '鹽度 (psu)', data: SALTValues }   // 鹽度數據
+    ],
+    xaxis: {
+        type: 'datetime',  // 設定x軸為日期時間類型
+        labels: {
+            style: {
+                fontSize: '20px', 
+                fontWeight: 'bold', // 設定字體粗細
+                fontFamily: 'Arial, sans-serif' // 設定字體
+            }
+        }
+    },
+    tooltip: {
+        enabled: true,  // 啟用工具提示
+        shared: true,   // 顯示所有系列的數據
+        intersect: false, // 鼠標不需要精確對齊數據點即可顯示提示框
+        x: {
+            format: 'dd MMM yyyy HH:mm'  // 格式化x軸顯示日期時間
+        },
+        y: {
+            formatter: function(value, { seriesIndex, dataPointIndex, w }) {
+                const seriesName = w.globals.seriesNames[seriesIndex]; // 取得當前系列的名稱
+                return `${seriesName}: ${value}`; // 返回數值和名稱
+            }
+        }
+    },        
+    legend: {
+        fontSize: '20px',  // 設定圖例的字體大小
+        labels: {
+            useSeriesColors: true,  // 使用每個系列的顏色來顯示標籤
+        }
+    },
+};
+// 如果底部圖表已存在，先銷毀先前的圖表
+if (abnormalChart && typeof abnormalChart.destroy === 'function') {
+    abnormalChart.destroy(); // 使用 ApexCharts 的 destroy() 方法
+}
+// 創建新的圖表並渲染
+abnormalChart = new ApexCharts(document.querySelector("#abnormalChart"), options);
+abnormalChart.render();
+}
+
+//請求數據後畫圖(歷史)
+function updateChart() {
+    const startDate = document.getElementById("startDateTime").value;
+    const endDate = document.getElementById("endDateTime").value;
+    document.getElementById("chartContainerWrapper").style.display = "block";
+    const filteredData = data.filter(record => {
+        const recordDate = record[0].split(' ')[0]; 
+        return (!startDate || recordDate >= startDate) && (!endDate || recordDate <= endDate);
+    });
+    const temperatures = filteredData.map(record => [record[0], record[1]]);
+    const pHValues = filteredData.map(record => [record[0], record[2]]);
+    const DOValues = filteredData.map(record => [record[0], record[3]]);
+    const ORPValues = filteredData.map(record => [record[0], record[4]]);
+    const SALTValues = filteredData.map(record => [record[0], record[5]]);
+    renderChart(temperatures, pHValues, DOValues, ORPValues, SALTValues);
+    console.log("我又再做")
+}
+function renderChart(temperatures = [], pHValues = [], DOValues = [], ORPValues = [], SALTValues = []) {
+const options = {
+    chart: {
+        type: 'line',  
+        width: '100%',   
+    },
+    series: [
+        { name: '溫度 (°C)', data: temperatures }, // 溫度數據，並在名稱中加上單位
+        { name: '酸鹼值 (pH)', data: pHValues },   // 酸鹼值數據
+        { name: '溶氧量 (mg/L)', data: DOValues },  // 溶氧量數據
+        { name: 'ORP (mV)', data: ORPValues },    // ORP數據
+        { name: '鹽度 (psu)', data: SALTValues }   // 鹽度數據
+    ],
+    xaxis: {
+        type: 'datetime',  // 設定x軸為日期時間類型
+        labels: {
+            style: {
+                fontSize: '20px', 
+                fontWeight: 'bold', // 設定字體粗細
+                fontFamily: 'Arial, sans-serif' // 設定字體
+            }
+        }
+    },
+    tooltip: {
+        enabled: true,  // 啟用工具提示
+        shared: true,   // 顯示所有系列的數據
+        intersect: false, // 鼠標不需要精確對齊數據點即可顯示提示框
+        x: {
+            format: 'dd MMM yyyy HH:mm'  // 格式化x軸顯示日期時間
+        },
+        y: {
+            formatter: function(value, { seriesIndex, dataPointIndex, w }) {
+                const seriesName = w.globals.seriesNames[seriesIndex]; // 取得當前系列的名稱
+                return `${seriesName}: ${value}`; // 返回數值和名稱
+            }
+        }
+    },        
+    legend: {
+        fontSize: '20px',
+        labels: {
+            useSeriesColors: true,  
+        }
+    },
+};
+if (bottomChart && typeof bottomChart.destroy === 'function') {
+    bottomChart.destroy(); 
+}
+bottomChart = new ApexCharts(document.querySelector("#bottomChart"), options);
+bottomChart.render();
+} 
+
+</script>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</html>

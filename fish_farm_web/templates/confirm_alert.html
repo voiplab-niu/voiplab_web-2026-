@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>通知確認</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles2.css') }}">
+</head>
+<body>
+  <div class="confirmation">
+    <h1>通知確認</h1>
+    <p>警報 <span class="alert-id">{{ alert_id }}</span> 已收到並確認</p>
+
+    <!-- 已處理按鈕：送 POST 請求到 process_alert -->
+    <form action="{{ url_for('process_alert', alert_id=alert_id) }}" method="post" style="display:inline;">
+      <button type="submit" class="btn btn-primary">已處理</button>
+    </form>
+
+    <a href="/fish_farm/" class="btn">返回首頁</a>
+  </div>
+</body>
+</html>

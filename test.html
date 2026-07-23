@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>魚之國之謎</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; background: #0b1020; color: #e8ecf2; min-height: 100vh; display: flex; flex-direction: column; }
+    header { padding: 16px; background: #1a2238; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 10; }
+    header button { padding: 8px 14px; border: none; border-radius: 6px; background: #5eead4; color: #0b1020; cursor: pointer; }
+    header button:hover { background: #38b2ac; color: #fff; }
+    main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; }
+    section { display: none; width: 100%; max-width: 600px; text-align: center; }
+    .active { display: block; }
+    h1 { margin-bottom: 20px; }
+    .story { font-size: 1.1em; line-height: 1.6; background: rgba(255,255,255,0.05); padding: 16px; border-radius: 10px; }
+    .artifact { margin: 20px; width: 80px; height: 80px; background: #5eead4; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color:#0b1020; font-weight:bold; }
+    .wall-image { margin-top: 20px; width: 80%; max-width: 400px; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <header id="nav">
+    <button onclick="showSection('home')">神祕門</button>
+    <button onclick="showSection('puzzle1')">告示牌</button>
+	<button onclick="showSection('scanner')">深海指引者</button>
+	<button onclick="showSection('puzzle2')">隱藏的道路</button>
+  </header>
+  <main>
+    <section id="home" class="active">
+      <h1>打開的神祕門</h1>
+      <div class="story">
+        在一陣煙霧後，旁邊的石牆猛然向兩側滑開<br><br>
+        原以為會有一條通道的你，發現後面出現了另外一面石牆。<br><br>
+        牆上出現了許多的按鈕，以及一段文字...<br><br>
+		同時附近也出現了一段悠揚的音樂，<br><br>
+		你感覺只要找到音樂的源頭就可以有一些線索...
+      </div>
+      <img src="ONE.png" alt="石牆" class="wall-image" />
+      <div style="margin-top:20px;">
+        <div class="artifact" onclick="unlockStep(1)">☀</div>
+        <div class="artifact" onclick="unlockStep(2)">☽</div>
+        <div class="artifact" onclick="unlockStep(3)">★</div>
+		<div class="artifact" onclick="unlockStep(4)">☀</div>
+        <div class="artifact" onclick="unlockStep(5)">☽</div>
+        <div class="artifact" onclick="unlockStep(6)">★</div>
+		<div class="artifact" onclick="unlockStep(7)">☀</div>
+        <div class="artifact" onclick="unlockStep(8)">☽</div>
+        <div class="artifact" onclick="unlockStep(9)">★</div>
+		<div class="artifact" onclick="unlockStep(10)">☀</div>
+        <div class="artifact" onclick="unlockStep(11)">☽</div>
+        <div class="artifact" onclick="unlockStep(12)">★</div>
+      </div>
+    </section>
+
+    <section id="scanner">
+      <h2>QR Code 掃描</h2>
+      <div class="video-wrap">
+        <video id="video" playsinline muted></video>
+        <canvas id="overlay"></canvas>
+      </div>
+      <ul id="menu"></ul>
+    </section>
+
+    <section id="puzzle1">
+      <h2>牆壁附近的告示牌</h2>
+      <p>在石門附近有一個怪異的告示牌，上面的一些圖案吸引你的注意!</p>
+	  <img src="Sign.png" alt="告示牌" class="wall-image" />
+    </section>
+
+    <section id="puzzle2">
+      <h2>隱藏的道路</h2>
+      <p>透過深海指引者你發現一條隱藏的道路，順著道路走下去，在道路盡頭發現了三個文字</p>
+	  <img src="stonepic.png" alt="石牌" class="wall-image" />
+	  <p>再這些文字旁邊掉落了一張紙，但有一些破損了，只能隱約看出破損的似乎是同一個數字...</p>
+	  <img src="stone.png" alt="紙" class="wall-image" id="stone"/>
+	  
+    </section>
+
+    <section id="puzzle3">
+      <h2>謎題 3</h2>
+      <p>恭喜你！你找到了古文明留下的第三個試煉！</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script>
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const ctx = overlay.getContext('2d');
+    const menu = document.getElementById('menu');
+    const nav = document.getElementById('nav');
+    let stream, running=false;
+
+    function showSection(id){
+      document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if(id==='scanner') start(); else stop();
+	  if(id === 'puzzle2') {
+		enableOrientation();
+	  }
+    }
+
+    async function start(){
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+        video.srcObject = stream;
+        video.play();
+        running = true;
+        requestAnimationFrame(tick);
+      } catch(e){
+        alert('無法啟動相機: '+e);
+      }
+    }
+
+    function stop(){
+      running = false;
+      if(stream){
+        stream.getTracks().forEach(t=>t.stop());
+        stream = null;
+      }
+    }
+	
+    function tick(){
+      if (!running) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA){
+        overlay.width = video.videoWidth;
+        overlay.height = video.videoHeight;
+        ctx.drawImage(video,0,0,overlay.width,overlay.height);
+        const img = ctx.getImageData(0,0,overlay.width,overlay.height);
+        const code = jsQR(img.data, img.width, img.height, {inversionAttempts:'attemptBoth'});
+        if (code){
+          drawLine(code.location);
+          onDetected(code.data);
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function drawLine(loc){
+      ctx.beginPath();
+      ctx.moveTo(loc.topLeftCorner.x, loc.topLeftCorner.y);
+      ctx.lineTo(loc.topRightCorner.x, loc.topRightCorner.y);
+      ctx.lineTo(loc.bottomRightCorner.x, loc.bottomRightCorner.y);
+      ctx.lineTo(loc.bottomLeftCorner.x, loc.bottomLeftCorner.y);
+      ctx.closePath();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#5eead4';
+      ctx.stroke();
+    }
+
+    function onDetected(text){
+      const items = Array.from(menu.querySelectorAll('li')).map(li=>li.dataset.val);
+      if (!items.includes(text)){
+        const li = document.createElement('li');
+        li.dataset.val = text;
+        li.innerHTML = '<a href="${safeHref(text)}" target="_blank">${text}</a>';
+        menu.appendChild(li);
+      }
+
+      // 特定 QR Code 觸發新選單項目
+      if(text === "unlock-puzzle2"){
+        if(!document.getElementById('btn-puzzle2')){
+          const btn = document.createElement('button');
+          btn.id = 'btn-puzzle2';
+          btn.textContent = '謎題 2';
+          btn.onclick = ()=>showSection('puzzle2');
+          nav.appendChild(btn);
+        }
+      }
+    }
+
+    function safeHref(s){
+      try { const u=new URL(s); return u.href; } catch { return 'javascript:void(0)'; }
+    }
+
+    // 隱藏連結解鎖謎題 3
+    let unlockProgress = 0;
+    function unlockStep(step){
+      if(step === unlockProgress + 1){
+        unlockProgress++;
+        if(unlockProgress === 3){
+          if(!document.getElementById('btn-puzzle3')){
+            const btn = document.createElement('button');
+            btn.id = 'btn-puzzle3';
+            btn.textContent = '謎題 3';
+            btn.onclick = ()=>showSection('puzzle3');
+            nav.appendChild(btn);
+            alert('你解開了古文明的封印，謎題 3 已解鎖！');
+          }
+        }
+      } else {
+        unlockProgress = 0; // 點錯就重來
+      }
+    }
+	let stoneClickCount = 0; // 記錄點擊次數
+	const stone = document.getElementById('stone');
+
+	// 點擊事件
+	stone.addEventListener('click', () => {
+	  stoneClickCount++;
+	  if (stoneClickCount === 5) {
+		// 創建並顯示新圖片
+		const newImg = document.createElement('img');
+		const newword = document.createElement('div');
+		newImg.src = 'Q3.jpg'; // 你要出現的圖片
+		newImg.alt = '隱藏圖片';
+		newImg.className = 'wall-image';
+		newword.innerHTML='用力彈一彈紙後，從紙張的縫隙中掉出一張照片'
+		stone.parentElement.appendChild(newword);
+		stone.parentElement.appendChild(newImg);
+		
+	  }
+	});
+
+function enableOrientation() {
+alert("test");
+  if (typeof DeviceOrientationEvent !== "undefined" && 
+      typeof DeviceOrientationEvent.requestPermission === "function") {
+    // iOS
+    DeviceOrientationEvent.requestPermission()
+      .then((response) => {
+        if (response === "granted") {
+          window.addEventListener("deviceorientation", handleOrientation);
+        } else {
+          alert("未允許使用方向感測器，部分功能可能無法使用。");
+        }
+      })
+      .catch(console.error);
+  } else {
+    // Android
+    window.addEventListener("deviceorientation", handleOrientation);
+  }
+}
+
+function handleOrientation(event) {
+  const beta = event.beta; // 前後傾斜角度 (-180 ~ 180)
+  const stoneImg = document.getElementById("stone");
+  if (!stoneImg) return;
+
+  if (beta > 100 || beta < -100) {
+    // 面朝下
+    stoneImg.src = "stone2.png";
+  } else {
+    // 面朝上
+    stoneImg.src = "stone.png";
+  }
+}
+
+
+  </script>
+</body>
+</html>
+
