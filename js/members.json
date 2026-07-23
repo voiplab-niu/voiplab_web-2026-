@@ -1,0 +1,45 @@
+{
+  "current_members": [
+    {
+      "name": "林士哲",
+      "role": "指導/成員",
+      "id": "共同指導學生",
+      "email": "voiplab.niu@gmail.com",
+      "image": "images/shehche.jpg"
+    },
+    {
+      "name": "王浩庭",
+      "role": "成員",
+      "id": "B1243002",
+      "email": "b1243002@ems.niu.edu.tw",
+      "image": "images/312515_0.jpg"
+    },
+    {
+      "name": "周俊丞",
+      "role": "成員",
+      "id": "B1243006",
+      "email": "b1243006@ems.niu.edu.tw",
+      "image": "images/312516_0.jpg"
+    },
+    {
+      "name": "余成恩",
+      "role": "成員",
+      "id": "B1243015",
+      "email": "b1243015@ems.niu.edu.tw",
+      "image": "images/312525.jpg"
+    },
+    {
+      "name": "游曉莉",
+      "role": "成員",
+      "id": "助理",
+      "email": "kingfulis@gmail.com",
+      "image": "images/girl.jpg"
+    }
+  ],
+  "project_students": [
+    { "name": "謝復彰", "role": "專題生", "id": "", "email": "", "image": "images/boy.jpg" },
+    { "name": "黃禾翊", "role": "專題生", "id": "", "email": "", "image": "images/boy.jpg" },
+    { "name": "蔡勁宏", "role": "專題生", "id": "", "email": "", "image": "images/boy.jpg" },
+    { "name": "陳柏儒", "role": "專題生", "id": "", "email": "", "image": "images/boy.jpg" }
+  ]
+}
