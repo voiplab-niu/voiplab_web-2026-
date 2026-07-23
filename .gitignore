@@ -26,3 +26,4 @@ old FISH/
 __pycache__/
 *.pyc
 *.db
+fish_farm_web/
