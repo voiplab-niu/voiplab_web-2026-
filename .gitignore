@@ -25,3 +25,4 @@ old FISH/
 # 忽略 Python 的執行暫存檔
 __pycache__/
 *.pyc
+*.db
