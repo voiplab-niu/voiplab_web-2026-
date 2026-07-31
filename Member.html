@@ -132,5 +132,33 @@ if (whatday) whatday.innerHTML = date;
 </script>
 
 <script src="js/render_members.js"></script>
+<script type="text/javascript">
+// 設定計數器
+let chouClickCount = 0;
+
+// 監聽整個網頁的點擊事件
+document.addEventListener('click', function(event) {
+    // 檢查被點擊的元素是不是圖片 (IMG)
+    if (event.target.tagName === 'IMG') {
+        
+        // 檢查該圖片的 src 路徑是否包含周俊丞的原始檔名 '312516_0.jpg'
+        if (event.target.src.includes('312516_0.jpg')) {
+            chouClickCount++; // 點擊次數 +1
+            
+            // 測試用：可以在瀏覽器主控台 (Console) 看到目前點擊了幾次
+            console.log('已點擊周俊丞照片：', chouClickCount, '次');
+            
+            // 當點擊次數達到 17 次時
+            if (chouClickCount === 17) {
+                // 將圖片替換成彩蛋圖片 (請把這邊換成你準備好的圖片路徑)
+                event.target.src = 'images/god.jpg'; 
+                
+                // 如果你想讓這個彩蛋重新計算，可以把下面這行解除註解
+                // chouClickCount = 0; 
+            }
+        }
+    }
+});
+</script>
 </body>
 </html>
