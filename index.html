@@ -25,6 +25,7 @@ Released   : 20131117
 <link rel ="icon"type="image/x-icon"href="images/voip.ico"/>
 <script src ="jmin.js"></script>
 <script src ="js/jquery.flexslider.js"></script>
+<script src="js/home-slider.js"></script>
 <script src="https://kit.fontawesome.com/698a46b724.js" crossorigin="anonymous"></script>
 
 <!--[if IE 6]>
@@ -37,7 +38,6 @@ Released   : 20131117
 		<div id="header" class="container">
 			<div id="logo">
 				<h1><img src ="images/voipo.png" width="50" height="55" >VoIPLab</h1>
-				<p>建立於2007/08</a></p>
 			</div>
 			<div id="social">
 				<div id="whatday" class="time">none</div>
@@ -68,33 +68,12 @@ Released   : 20131117
 	<div id="page" class="container">
     <div class="column5">
         <div class="title">
-            <div class="flexslider" style="width: 80% !important; height: 50vh !important; margin: 0 auto !important; display: flex !important; align-items: center !important; justify-content: center !important;">
-                <ul class="slides" style="/* display: flex !important; */align-items: center !important;justify-content: center !important;height: 100% !important;">
-                    <li style="display: block; align-items: center !important; justify-content: center !important; height: 100% !important; width: 100%; float: left; margin-right: -100%; position: relative; opacity: 1; z-index: 2;" class="flex-active-slide" data-thumb-alt="">
-                        <a href="https://academic.niu.edu.tw/p/412-1003-5550.php">
-                            <img src="images/S__36487176.jpg" style="max-height: 100% !important; max-width: 100% !important; object-fit: contain !important;" draggable="false">
-                        </a>
-                    </li>
-                    <li style="display: block; align-items: center !important; justify-content: center !important; height: 100% !important; width: 100%; float: left; margin-right: -100%; position: relative; opacity: 0; z-index: 1;" data-thumb-alt="">
-                        <a href="https://www.travelnews.tw/news/2024%E5%AE%9C%EF%BC%81%E8%98%AD%E6%96%B0%E5%89%B5%E5%8A%9B%E6%98%AF%E5%AE%9C%E8%98%AD%E9%9D%92%E5%B9%B4%E5%89%B5%E6%A5%AD%E7%9A%84%E9%87%8D%E8%A6%81%E6%8E%A8%E6%89%8B/">
-                            <img src="images/2024_1.jpg" style="max-height: 100% !important; max-width: 100% !important; object-fit: contain !important;" draggable="false">
-                        </a>
-                    </li>
-                    <li style="display: block; align-items: center !important; justify-content: center !important; height: 100% !important; width: 100%; float: left; margin-right: -100%; position: relative; opacity: 0; z-index: 1;" data-thumb-alt="">
-                        <a href="https://innoserve.tca.org.tw/award.aspx">
-                            <img src="images/29屆innoserve矽谷組第一名.png" style="max-height: 100% !important; max-width: 100% !important; object-fit: contain !important;" draggable="false">
-                        </a>
-                    </li>
-                    <li style="display: block; align-items: center !important; justify-content: center !important; height: 100% !important; width: 100%; float: left; margin-right: -100%; position: relative; opacity: 0; z-index: 1;" data-thumb-alt="">
-                        <a href="https://innoserve.tca.org.tw/award.aspx">
-                            <img src="images/29屆innoserve資訊應用組第二名.png" style="max-height: 100% !important; max-width: 100% !important; object-fit: contain !important;" draggable="false">
-                        </a>
-                    </li>
-                    <li style="display: block; align-items: center !important; justify-content: center !important; height: 100% !important; width: 100%; float: left; margin-right: -100%; position: relative; opacity: 0; z-index: 1;" data-thumb-alt="">
-                        <img src="images/多元競賽.jpg" style="max-height: 100% !important; max-width: 100% !important; object-fit: contain !important;" draggable="false">
-                    </li>
-                </ul>
-            </div>
+			<div class="flexslider"
+				style="width: 80% !important; margin: 0 auto 40px !important;">
+				<!--
+				Edit images in /js/home-slider.js
+				-->
+			</div>
         </div>
     </div>
 </div>
@@ -102,7 +81,7 @@ Released   : 20131117
 	<div id="portfolio-wrapper" style="padding: 40px 0;">
     <div id="portfolio" class="container" style="max-width: 800px; margin: 0 auto;">
         <div class="title" style="text-align: center; margin-bottom: 30px;">
-            <h2 style="font-size: 1.8em; color: #333;"><b>114 學年度下學期 陳懷恩教授開授課程</b></h2>
+            <h2 style="font-size: 1.8em; color: #333;"><b>115 學年度上學期 陳懷恩教授開授課程</b></h2>
         </div>
         <table id="classwen" style="margin: 0 auto; font-size: 1.2em; font-family: 'Source Sans Pro', sans-serif; width: 100%;">
             <tr>
@@ -119,9 +98,6 @@ Released   : 20131117
 </div>
 
 </div>
-
-
-
 
 
 <div id="footer" class="footer" style="background-color: #f8f8f8; padding: 20px; font-family: 'Source Sans Pro', sans-serif; text-align: center; font-size: 1em;">
@@ -144,7 +120,7 @@ Released   : 20131117
     </p>
     <p class="footer-contact" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;">
 	    <span class="fa-solid fa-envelope" style="color: #000000;"></span>
-        <span>Email: <a href="mailto:voiplab.niu@gmail.com" style="color: #0066cc; text-decoration: none;">voiplab.niu@gmail.com</a></span>
+        <span>Email：<a href="mailto:voiplab.niu@gmail.com" style="color: #0066cc; text-decoration: none;">voiplab.niu@gmail.com</a></span>
     </p>
 </div>
 
@@ -162,7 +138,7 @@ Released   : 20131117
         </div>	
     </div> 
 	<p class="footer-address" style="margin: 10px 0; color: #666;">
-       &copy; Copyright 2024 NIU VoIP Lab. 建立於 2007/08
+       &copy; Copyright 2026 NIU VoIP Lab. 建立於 2007/08
     </p>	
 </div>
 
