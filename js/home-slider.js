@@ -2,7 +2,7 @@
 (function () {
     var slides = [
         {
-            image: "images/研發長placeholder圖片.png",
+            image: "images/teacher.png",
             link: "https://academic.niu.edu.tw/p/412-1003-5550.php",
             title: "恭喜陳懷恩特聘教授接任國立宜蘭大學研發長",
             description: ""
@@ -17,13 +17,13 @@
             image: "images/智慧創新大賞佳作.jpg",
             link: "https://www.moea.gov.tw/MNS/populace/news/News.aspx?kind=1&menu_id=40&news_id=122509",
             title: "經濟部 2026智慧創新大賞佳作",
-            description: "本實驗室學生(由左至右)A、余成恩、林士哲、王浩庭、周俊丞榮獲經濟部 智慧創新大賞佳作"
+            description: "本實驗室學生(由左至右)余成恩、林士哲、王浩庭、周俊丞榮獲經濟部 智慧創新大賞佳作"
         },
         {
             image: "images/2025智慧創新應用大賽暨5G加速器徵 亞軍.jpg",
             link: "https://www.mirrormedia.mg/story/20251202mkt001",
             title: "2025 中華電信智慧創新應用大賽暨5G加速器徵選 亞軍",
-            description: "本實驗室學生(由左至右)A、王浩庭、余成恩、周俊丞、陳富翔、B中華電信智慧創新應用大賽暨5G加速器徵選 亞軍"
+            description: "本實驗室學生(由左至右)王浩庭、余成恩、周俊丞、陳富翔中華電信智慧創新應用大賽暨5G加速器徵選 亞軍"
         }
         /*
         {
