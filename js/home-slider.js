@@ -2,7 +2,7 @@
 (function () {
     var slides = [
         {
-            image: "images/teacher.png",
+            image: "images/暫時的.png",
             link: "https://academic.niu.edu.tw/p/412-1003-5550.php",
             title: "恭喜陳懷恩特聘教授接任國立宜蘭大學研發長",
             description: ""
