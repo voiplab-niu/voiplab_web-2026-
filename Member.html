@@ -11,22 +11,135 @@
 <link href="fonts.css" rel="stylesheet" type="text/css" media="all" />
 <link href="mycss.css" rel="stylesheet" type="text/css" media="all" />
 <link href="footer.css" rel="stylesheet" type="text/css" media="all" />
-<link href ="flexslider.css" rel ="stylesheet" type ="text/css">
-<link rel ="icon"type="image/x-icon"href="images/voip.ico"/>
-<script src ="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<link href="flexslider.css" rel="stylesheet" type="text/css">
+<link rel="icon" type="image/x-icon" href="images/voip.ico"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script src="https://kit.fontawesome.com/698a46b724.js" crossorigin="anonymous"></script>
-<script src ="js/jquery.flexslider.js"></script>
+<script src="js/jquery.flexslider.js"></script>
+<!--[if IE 6]><link href="default_ie6.css" rel="stylesheet" type="text/css" /><![endif]-->
 
-<!--[if IE 6]>
-<link href="default_ie6.css" rel="stylesheet" type="text/css" />
-<![endif]-->  
+<!-- ================= 神降臨特效專用 CSS ================= -->
+<style>
+  /* --- 神聖領域 (背景) --- */
+  #god-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #ffffff 0%, #ffdf73 30%, #4a2e00 70%, #000000 100%);
+    z-index: 99999; /* 確保蓋過網頁所有元素 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 2s ease-in-out;
+  }
+
+  #god-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* --- 致盲白光 (開場閃光) --- */
+  .flash-bang {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: white;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #god-overlay.active .flash-bang {
+    animation: flashOut 3s ease-out forwards;
+  }
+
+  /* --- 旋轉的萬丈光芒 (背後光束) --- */
+  .holy-rays {
+    position: absolute;
+    width: 200vw;
+    height: 200vw;
+    background: repeating-conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0.8) 0deg 10deg,
+      transparent 10deg 20deg
+    );
+    -webkit-mask-image: radial-gradient(circle, white 10%, transparent 50%);
+    mask-image: radial-gradient(circle, white 10%, transparent 50%);
+    z-index: 1;
+    opacity: 0;
+  }
+  #god-overlay.active .holy-rays {
+    animation: spinRays 40s linear infinite, fadeInRays 4s forwards 1s;
+  }
+
+  /* --- 神明容器與圖片 --- */
+  .god-wrapper {
+    z-index: 5;
+    opacity: 0;
+  }
+  #god-overlay.active .god-wrapper {
+    animation: descend 4s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  }
+
+  .god-entity {
+    width: 450px; /* 控制降臨圖片的大小 */
+    border-radius: 15px; /* 讓方形圖片邊角柔和一點 */
+    filter: drop-shadow(0 0 80px rgba(255, 255, 255, 1));
+    animation: floatAndGlow 4s ease-in-out infinite alternate;
+  }
+
+  /* --- 金色飄浮粒子 --- */
+  .particle {
+    position: absolute;
+    background: #ffebb3;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fff, 0 0 20px #ffd700;
+    z-index: 8;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* ================= 動畫定義 ================= */
+  @keyframes flashOut {
+    0% { opacity: 1; }
+    30% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+  }
+  @keyframes spinRays {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes fadeInRays {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes descend {
+    0% { transform: translateY(-400px) scale(0.3); opacity: 0; filter: blur(10px); }
+    40% { opacity: 1; filter: blur(0px); }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes floatAndGlow {
+    0% { transform: translateY(0px); filter: drop-shadow(0 0 50px rgba(255, 255, 255, 0.8)); }
+    100% { transform: translateY(-25px); filter: drop-shadow(0 0 120px rgba(255, 215, 0, 1)); }
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
+  }
+</style>
+<!-- ================================================= -->
+
 </head>
 <body onLoad="startclock()">
 <div id="wrapper">
     <div id="header-wrapper">
         <div id="header" class="container">
             <div id="logo">
-                <h1><img src ="images/voipo.png" width="50" height="55" >VoIPLab</h1>
+                <h1><img src="images/voipo.png" width="50" height="55">VoIPLab</h1>
             </div>
             <div id="social">
                 <div id="whatday" class="time">none</div>
@@ -61,15 +174,15 @@
                     本網站著作權屬於宜蘭大學 資訊工程學系 VoIP Lab，請詳見:
                     <a class="footer-button" href="use.html" style="color: #0066cc; text-decoration: none;">使用規則</a>
                 </p>
-                <p class="footer-text" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;"> 
-                    <span class="fa-solid fa-location-dot" style="color: #ff1a1a;"></span>
+                <p class="footer-text" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;">
+                     <span class="fa-solid fa-location-dot" style="color: #ff1a1a;"></span>
                     地址：260宜蘭縣宜蘭市神農路一段1號 格致大樓，請詳見:
                     <a class="footer-button" href="map.html" style="color: #0066cc; text-decoration: none;">宜大校園地圖</a>
                 </p>
                 <p class="footer-contact" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;">
                     <span class="fa-solid fa-phone" style="color: #050505;"></span>
-                    <span>電話：(03) 935-7400, 0972-570030 分機7315</span>        
-                </p>
+                    <span>電話：(03) 935-7400, 0972-570030 分機7315</span>
+                        </p>
                 <p class="footer-contact" style="margin: 10px 0; font-size: 1.1em; line-height: 1.5;">
                     <span class="fa-solid fa-envelope" style="color: #000000;"></span>
                     <span>Email: <a href="mailto:voiplab.niu@gmail.com" style="color: #0066cc; text-decoration: none;">voiplab.niu@gmail.com</a></span>
@@ -85,13 +198,25 @@
                     loading="lazy" 
                     referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
-            </div>    
-        </div> 
-        <p class="footer-address" style="margin: 10px 0; color: #666;">
+            </div>
+            </div>
+         <p class="footer-address" style="margin: 10px 0; color: #666;">
            &copy; Copyright 2024 NIU VoIP Lab. 建立於 2007/08
-        </p>    
-    </div>
+        </p>
+        </div>
 </div>
+
+<!-- ================= 神聖領域 DOM ================= -->
+<div id="god-overlay">
+  <div class="flash-bang"></div>
+  <div class="holy-rays"></div>
+  <div id="particles-container" style="position: absolute; width: 100%; height: 100%; top:0; left:0; overflow: hidden; pointer-events: none;"></div>
+  <div class="god-wrapper">
+    <!-- 降臨的圖片，設定為彩蛋圖片 -->
+    <img src="images/god.jpg" class="god-entity" alt="神明">
+  </div>
+</div>
+<!-- ================================================= -->
 
 <script type="text/javascript">
 // time functions
@@ -132,33 +257,64 @@ if (whatday) whatday.innerHTML = date;
 </script>
 
 <script src="js/render_members.js"></script>
-<script type="text/javascript">
-// 設定計數器
-let chouClickCount = 0;
 
-// 監聽整個網頁的點擊事件
-document.addEventListener('click', function(event) {
-    // 檢查被點擊的元素是不是圖片 (IMG)
-    if (event.target.tagName === 'IMG') {
-        
-        // 檢查該圖片的 src 路徑是否包含周俊丞的原始檔名 '312516_0.jpg'
-        if (event.target.src.includes('312516_0.jpg')) {
-            chouClickCount++; // 點擊次數 +1
-            
-            // 測試用：可以在瀏覽器主控台 (Console) 看到目前點擊了幾次
-            console.log('已點擊周俊丞照片：', chouClickCount, '次');
-            
-            // 當點擊次數達到 17 次時
-            if (chouClickCount === 17) {
-                // 將圖片替換成彩蛋圖片 (請把這邊換成你準備好的圖片路徑)
-                event.target.src = 'images/god.jpg'; 
-                
-                // 如果你想讓這個彩蛋重新計算，可以把下面這行解除註解
-                // chouClickCount = 0; 
-            }
-        }
+<!-- ================= 整合後的計數器與特效腳本 ================= -->
+<script type="text/javascript">
+  const overlay = document.getElementById('god-overlay');
+  const particleContainer = document.getElementById('particles-container');
+
+  // 產生金色粒子特效
+  function createParticles() {
+    particleContainer.innerHTML = ''; 
+    const particleCount = 40; 
+    for (let i = 0; i < particleCount; i++) {
+      let particle = document.createElement('div');
+      particle.classList.add('particle');
+      let size = Math.random() * 6 + 2; 
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.left = Math.random() * 100 + 'vw';
+      let duration = Math.random() * 4 + 3; 
+      let delay = Math.random() * 3; 
+      particle.style.animation = `floatUp ${duration}s linear ${delay}s infinite`;
+      particleContainer.appendChild(particle);
     }
-});
+  }
+
+  // 點擊全螢幕任意處關閉神聖特效
+  overlay.addEventListener('click', () => {
+    overlay.classList.remove('active');
+    particleContainer.innerHTML = ''; 
+  });
+
+  // 設定計數器
+  let chouClickCount = 0;
+
+  // 監聽整個網頁的點擊事件
+  document.addEventListener('click', function(event) {
+      // 檢查被點擊的元素是不是圖片 (IMG)
+      if (event.target.tagName === 'IMG') {
+          // 檢查該圖片的 src 路徑是否包含周俊丞的原始檔名 '312516_0.jpg'
+          if (event.target.src.includes('312516_0.jpg')) {
+              chouClickCount++; // 點擊次數 +1
+              
+              console.log('已點擊周俊丞照片：', chouClickCount, '次');
+              
+              // 當點擊次數達到 17 次時
+              if (chouClickCount === 17) {
+                  // 1. 將原本名單上的圖片替換成彩蛋圖片
+                  event.target.src = 'images/god.jpg';
+                  
+                  // 2. 觸發全螢幕神聖降臨特效
+                  overlay.classList.add('active');
+                  createParticles();
+
+                  // 若希望特效看過後計數器歸零重新計算，可取消下方註解
+                  chouClickCount = 0; 
+              }
+          }
+      }
+  });
 </script>
 </body>
 </html>
