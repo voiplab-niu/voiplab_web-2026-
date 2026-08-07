@@ -133,8 +133,9 @@
 </style>
 <!-- ================================================= -->
 
+<script src="Shared/date_time.js"></script>
 </head>
-<body onLoad="startclock()">
+<body>
 <div id="wrapper">
     <div id="header-wrapper">
         <div id="header" class="container">
@@ -144,7 +145,7 @@
             <div id="social">
                 <div id="whatday" class="time">none</div>
                 <form name="clock">
-                    <input name="thetime" class="time" size="10">
+                    <span class="time" id="thetime"></span>
                 </form>
             </div>
         </div>
@@ -217,44 +218,6 @@
   </div>
 </div>
 <!-- ================================================= -->
-
-<script type="text/javascript">
-// time functions
-var timerID = null;
-var timerRunning = false;
-function stopclock (){
-    if(timerRunning) clearTimeout(timerID);
-    timerRunning = false;
-}
-function startclock () { stopclock(); showtime(); }
-function showtime () {
-    var now = new Date();
-    var hours = now.getHours();
-    var minutes = now.getMinutes();
-    var seconds = now.getSeconds();
-    var timeValue = "" +((hours >= 12) ? "下午 " : "上午 " );
-    timeValue += ((hours >12) ? hours -12 :hours);
-    timeValue += ((minutes < 10) ? ":0" : ":") + minutes;
-    timeValue += ((seconds < 10) ? ":0" : ":") + seconds;
-    document.clock.thetime.value = timeValue;
-    timerID = setTimeout(showtime,1000);
-    timerRunning = true;
-}
-
-// which day
-var whatday = document.getElementById("whatday");
-var today = new Date();
-var day;
-if(today.getDay()==0) day = "週日.";
-if(today.getDay()==1) day = "週一.";
-if(today.getDay()==2) day = "週二.";
-if(today.getDay()==3) day = "週三.";
-if(today.getDay()==4) day = "週四.";
-if(today.getDay()==5) day = "週五.";
-if(today.getDay()==6) day = "週六.";
-var date = (today.getFullYear()) + "." + (today.getMonth() + 1 ) + "." + today.getDate() + " " + day;
-if (whatday) whatday.innerHTML = date;
-</script>
 
 <script src="js/render_members.js"></script>
 
